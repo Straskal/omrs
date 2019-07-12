@@ -1,36 +1,60 @@
+local milk = require("milk")
 local window = require("milk.window")
-local keyboard = require("milk.keyboard")
+local time = require("milk.time")
 local graphics = require("milk.graphics")
-local audio = require("milk.audio")
-local keys = keyboard.keys
+local game = require("assets.game")
 
-local game = {}
+local start = game.start or function() end
+local tick = game.tick or function() end
+local draw = game.draw or function() end
+local stop = game.stop or function() end
 
--- initialization logic goes here
-function game:start()
-	window.set_title("milk")
-	window.set_icon("res/milkicon.png")
-	window.set_size(1280, 720)
-	graphics.set_virtual_resoution(640, 360)
+-- initialize milk and it's libraries
+milk.init()
 
-	self.image = graphics.new_image("res/milk.png")
-	local w, h = self.image:get_size()
-	self.pos = { x = (640 / 2) - (w / 2), y = (360 / 2) - (h / 2) }
+-- initialize game
+start(game)
 
-	self.music = audio.new_music("res/08 Ascending.mp3") -- by Eric Skiff
-	self.music:loop(1)
+window.show()
+
+local TARGET_FPS = 60
+local SECONDS_PER_TICK = 1 / TARGET_FPS
+local frame_start_time = 0
+local frame_time
+local accumulated_frame_time = 0
+
+-- run at fixed time step of SECONDS_PER_TICK
+while not window.should_close() do
+    local t = time.get_total()
+    frame_time = t - frame_start_time
+    frame_start_time = t
+    accumulated_frame_time = accumulated_frame_time + frame_time
+
+    -- we most likely hit a breakpoint if a complete frame takes a whole second.
+    if accumulated_frame_time > 1 then
+        accumulated_frame_time = 1
+    end
+
+    while accumulated_frame_time >= SECONDS_PER_TICK do
+        window.poll()
+
+        -- game logic
+        tick(game, SECONDS_PER_TICK)
+
+        graphics.set_draw_color(0, 0, 0, 1)
+        graphics.clear()
+        graphics.set_draw_color(1, 1, 1, 1)
+
+        -- draw logic
+        draw(game, SECONDS_PER_TICK)
+
+        graphics.present()
+        accumulated_frame_time = accumulated_frame_time - SECONDS_PER_TICK
+    end
 end
 
--- game logic goes here
-function game:tick()
-	if keyboard.is_key_released(keys.ESCAPE) then 
-		window.close() 
-	end
-end
+-- shutdown
+stop(game)
 
--- draw calls go here
-function game:draw()
-	graphics.draw(self.image, self.pos.x, self.pos.y)
-end
-
-return game
+-- this should always be the last line of code executed.
+milk.quit()

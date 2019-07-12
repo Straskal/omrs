@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        // run this commands to get linting and debugging
+        // ext install vscode-lua 
+        "type": "lua",
+        "request": "launch",
+        "name": "Lua Launch",
+        // path to you main file
+        "program": "${workspaceFolder}/main.lua",
+        // path to a lua 5.3 interpeter
+        "luaexe": "${workspaceFolder}/lua53.exe",
+        "cwd": "${workspaceFolder}",
+        "luaRuntime": "5.3 32bit",
+        "stopOnEntry": false
+      }
+    ]
+}
