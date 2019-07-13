@@ -79,17 +79,30 @@ font.char_map = {
     different commands to call from text
 --]]
 font.commands = {
+    -- items are display as yellow text
     item = function()
         graphics.set_draw_color(1, 1, 0, 1)
     end,
-    enditem = function()
+    -- totes purps breh
+    purps = function()
+        graphics.set_draw_color(1, 0, 1, 1)
+    end,
+    -- returns the draw color back to its default
+    defcolor = function()
         graphics.set_draw_color(1, 1, 1, 1)
     end,
+    -- inserts and extra space
     sp = function(fnt)
-        fnt.currlinex = fnt.currlinex + fnt.space
+        fnt.currlinex = fnt.currlinex + fnt.spacex
     end,
+    -- ends the current line
+    endl = function(fnt)
+        fnt.currlinex = fnt.linex
+        fnt.currliney = fnt.currliney + fnt.spacey
+    end,
+    -- concatenate two tokens together instead of putting a space inbetween
     ["+"] = function(fnt)
-        fnt.currlinex = fnt.currlinex - fnt.space
+        fnt.currlinex = fnt.currlinex - fnt.spacex
     end
 }
 
@@ -105,7 +118,10 @@ local function new_font(image, marginx, marginy, scale)
     self.columns = 8 -- default for cbfg
     self.char_width = w / self.columns
     self.char_height = h / self.rows
-    self.space = (self.char_width + self.marginx) * self.scale
+    self.spacex = (self.char_width + self.marginx) * self.scale
+    self.spacey = (self.char_height + self.marginy) * self.scale
+    self.linex = 0
+    self.liney = 0
     self.currlinex = 0
     self.currliney = 0
     setmetatable(self, {__index = Font_mt})
@@ -113,6 +129,8 @@ local function new_font(image, marginx, marginy, scale)
 end
 
 function Font_mt:print(x, y, text, wrapat)
+    self.linex = x
+    self.liney = y
     self.currlinex = x
     self.currliney = y
 
@@ -130,11 +148,11 @@ function Font_mt:print(x, y, text, wrapat)
             local cmd = string.sub(currtoken, 2, len - 1)
             font.commands[cmd](self)
             -- remove whitespace that was entered for command syntax
-            self.currlinex = self.currlinex - self.space
+            self.currlinex = self.currlinex - self.spacex
         else
-            if wrapat and (self.currlinex + (len * self.space) > wrapat * self.space) then
-                self.currlinex = x
-                self.currliney = self.currliney + ((self.char_height + self.marginy) * self.scale)
+            if wrapat and (self.currlinex + (len * self.spacex) > wrapat * self.spacex) then
+                self.currlinex = self.linex
+                self.currliney = self.currliney + self.spacey
             end
             local j = 1
             while j <= len do
@@ -147,11 +165,11 @@ function Font_mt:print(x, y, text, wrapat)
                 local srcx = col * w
                 local srcy = row * h
                 graphics.drawx(self.image, self.currlinex, self.currliney, srcx, srcy, w, h, self.scale, self.scale, 0)
-                self.currlinex = self.currlinex + self.space
+                self.currlinex = self.currlinex + self.spacex
                 j = j + 1
             end
         end
-        self.currlinex = self.currlinex + self.space
+        self.currlinex = self.currlinex + self.spacex
     end
 end
 

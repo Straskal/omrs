@@ -16,7 +16,7 @@ function game:start()
     self.level = level.new()
     self.level:spawn(player)
     local image = graphics.new_image("assets/utils/font.png")
-    self.font = bmfont.new_font(image, -11, -8, 0.5)
+    self.font = bmfont.new_font(image, -11, -5, 0.5)
 end
 
 function game:tick(dt)
@@ -31,7 +31,7 @@ end
 
 function game:draw(dt)
     self.level:draw(dt)
-    self.font:print(40, 100, "Omg! You picked up a [item] plank [enditem] [+] !")
+    self.font:print(40, 100, "Omg! You [purps] picked [defcolor] up a [item] plank [defcolor] [+] !")
 end
 
 -- luacheck: push ignore self
