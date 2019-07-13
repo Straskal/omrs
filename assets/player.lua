@@ -44,7 +44,7 @@ function player:draw(dt)
     local x = self.position.x - 16
     local y = self.position.y - 16
     local srcx, srcy, srcw, srch = self.animator:tick(dt)
-    graphics.drawx(self.image, x, y, srcx, srcy, srcw, srch, 0.6, 0.6, 0)
+    graphics.drawx(self.image, x, y, srcx, srcy, srcw, srch, 1, 1, 0)
 end
 
 return player
