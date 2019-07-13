@@ -30,9 +30,7 @@ end
 
 function game:draw(dt)
     self.level:draw(dt)
-    bmfont.printx(self.font, 100, 100, "Hello there, big boiz", -10, 0.5)
-    bmfont.printx(self.font, 100, 140, "zebras are dope as shit quite", -10, 0.5)
-    bmfont.printx(self.font, 100, 180, "Hello there, big boiz", -10, 0.5)
+    bmfont.printx(self.font, 40, 100, "Omg! You picked up a [color(1,1,0,1)]plank[color(1,1,1,1)]!", -10, 0.5)
 end
 
 -- luacheck: push ignore self

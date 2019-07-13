@@ -61,6 +61,7 @@ local charmap = {
     ["y"] = 58,
     ["z"] = 59,
     ["["] = 60,
+    ["\\"] = 61,
     ["]"] = 62,
     ["^"] = 63,
     ["_"] = 64
@@ -86,14 +87,36 @@ function bmfont.print(font, x, y, text)
 end
 
 function bmfont.printx(font, x, y, text, spacing, scale)
-    graphics.set_draw_color(1, 1, 1, 1)
     local w, h = font.width, font.height
     local cols = font.columns
     local currx = x
     local curry = y
     local lower = string.lower(text)
-    for i = 1, #lower do
+    local i = 1
+    while i <= #lower do
         local c = lower:sub(i, i)
+        if c == "[" then
+            local commandend = i + 1
+            while lower:sub(commandend, commandend) ~= "]" do
+                if commandend >= #lower then
+                    error("Expected a closing bracket for command.")
+                end
+                commandend = commandend + 1
+            end
+            local command = lower:sub(i + 1, commandend - 1)
+            if command == 'n' then
+                curry = (curry + (h * scale)) + (spacing * scale)
+                currx = x
+            elseif string.gmatch(command, "color([0-1],[0-1],[0-1],[0-1])") then
+                local r = command:sub(7, 7)
+                local g = command:sub(9, 9)
+                local b = command:sub(11, 11)
+                local a = command:sub(13, 13)
+                graphics.set_draw_color(r, g, b, a)
+            end
+            i = commandend + 1
+            c = lower:sub(i, i)
+        end
         local idx = charmap[c]
         local row = math.floor((idx - 1) / cols)
         local col = math.floor((idx - 1) % cols)
@@ -101,6 +124,7 @@ function bmfont.printx(font, x, y, text, spacing, scale)
         local srcy = row * h
         graphics.drawx(font.bitmap, currx, curry, srcx, srcy, w, h, scale, scale, 0)
         currx = (currx + (w * scale)) + (spacing * scale)
+        i = i + 1
     end
 end
 
