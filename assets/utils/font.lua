@@ -147,7 +147,7 @@ function Font_mt:print(x, y, text, wrapat)
                 local srcx = col * w
                 local srcy = row * h
                 graphics.drawx(self.image, self.currlinex, self.currliney, srcx, srcy, w, h, self.scale, self.scale, 0)
-                self.currlinex = (self.currlinex + (w * self.scale)) + (self.marginx * self.scale)
+                self.currlinex = self.currlinex + self.space
                 j = j + 1
             end
         end
