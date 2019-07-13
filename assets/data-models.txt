@@ -1,0 +1,22 @@
+=======================
+GAME OBJECTS
+=======================
+all game objects
+- have a name
+- have a position
+- have an image
+- colliders
+
+some gameobjects have
+- animations
+
+=======================
+LEVELS
+=======================
+all levels have
+- names
+- width
+- height
+- tilemaps
+- camera
+- gameobjects
