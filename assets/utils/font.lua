@@ -83,10 +83,6 @@ font.commands = {
     item = function()
         graphics.set_draw_color(1, 1, 0, 1)
     end,
-    -- totes purps breh
-    purps = function()
-        graphics.set_draw_color(1, 0, 1, 1)
-    end,
     -- returns the draw color back to its default
     defcolor = function()
         graphics.set_draw_color(1, 1, 1, 1)
@@ -150,7 +146,8 @@ function Font_mt:print(x, y, text, wrapat)
             -- remove whitespace that was entered for command syntax
             self.currlinex = self.currlinex - self.spacex
         else
-            if wrapat and (self.currlinex + (len * self.spacex) > wrapat * self.spacex) then
+            local linew = (self.currlinex - self.linex) + (len * self.spacex)
+            if wrapat and (linew > (wrapat * self.spacex)) then
                 self.currlinex = self.linex
                 self.currliney = self.currliney + self.spacey
             end

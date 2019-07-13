@@ -6,7 +6,7 @@ local keys = keyboard.keys
 
 local player = gameobject.new("RADINALD", {x = 32, y = 32})
 
-local PLAYER_SPEED = 50
+local PLAYER_SPEED = 100
 
 function player:spawned()
     self.image = graphics.new_image("assets/player/omrs.png")
