@@ -2,7 +2,7 @@ local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local level = require("assets.core.level")
-local bmfont = require("assets.utils.bmfont")
+local bmfont = require("assets.utils.font")
 local player = require("assets.player.player")
 local keys = keyboard.keys
 
@@ -15,7 +15,8 @@ function game:start()
     graphics.set_resolution(_G.RESOLUTION.w, _G.RESOLUTION.h)
     self.level = level.new()
     self.level:spawn(player)
-    self.font = bmfont.new_font("assets/utils/font.png")
+    local image = graphics.new_image("assets/utils/font.png")
+    self.font = bmfont.new_font(image, -10, -8, 0.5)
 end
 
 function game:tick(dt)
@@ -30,7 +31,7 @@ end
 
 function game:draw(dt)
     self.level:draw(dt)
-    bmfont.printx(self.font, 40, 100, "Omg! You picked up a [color(1,1,0,1)]plank[color(1,1,1,1)]!", -10, 0.5)
+    self.font:print(40, 100, "Omg! You picked up a [item] plank [enditem] [+] !")
 end
 
 -- luacheck: push ignore self
