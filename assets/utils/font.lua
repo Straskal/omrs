@@ -132,9 +132,9 @@ function Font_mt:print(x, y, text, wrapat)
             -- remove whitespace that was entered for command syntax
             self.currlinex = self.currlinex - self.space
         else
-            if wrapat and (self.currlinex + (len * self.char_width * self.scale) + (self.marginx * self.scale) > wrapat) then
-                self.currlinex = 0
-                self.currliney = (self.currliney + (self.char_width * self.scale)) + (self.marginy * self.scale)
+            if wrapat and (self.currlinex + (len * self.space) > wrapat * self.space) then
+                self.currlinex = x
+                self.currliney = self.currliney + ((self.char_height + self.marginy) * self.scale)
             end
             local j = 1
             while j <= len do
