@@ -1,7 +1,7 @@
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local gameobject = require("assets.gameobject")
-local animator = require("assets.animator")
+local gameobject = require("assets.core.gameobject")
+local animator = require("assets.utils.animator")
 local keys = keyboard.keys
 
 local player = gameobject.new("RADINALD", {x = 32, y = 32})
@@ -9,7 +9,7 @@ local player = gameobject.new("RADINALD", {x = 32, y = 32})
 local PLAYER_SPEED = 50
 
 function player:spawned()
-    self.image = graphics.new_image("assets/omrs.png")
+    self.image = graphics.new_image("assets/player/omrs.png")
     self.animations = {
         idle = {1, 2, 3, 4, 5, 6}
     }

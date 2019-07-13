@@ -1,6 +1,6 @@
 local graphics = require("milk.graphics")
 
-local charmap = {
+local char_map = {
     [" "] = 1,
     ["!"] = 2,
     ['"'] = 3,
@@ -117,7 +117,7 @@ function bmfont.printx(font, x, y, text, spacing, scale)
             i = commandend + 1
             c = lower:sub(i, i)
         end
-        local idx = charmap[c]
+        local idx = char_map[c]
         local row = math.floor((idx - 1) / cols)
         local col = math.floor((idx - 1) % cols)
         local srcx = col * w

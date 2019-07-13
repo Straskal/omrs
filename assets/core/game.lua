@@ -1,9 +1,9 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local player = require("assets.player")
-local level = require("assets.level")
-local bmfont = require("assets.bmfont")
+local level = require("assets.core.level")
+local bmfont = require("assets.utils.bmfont")
+local player = require("assets.player.player")
 local keys = keyboard.keys
 
 local game = {}
@@ -15,7 +15,7 @@ function game:start()
     graphics.set_resolution(_G.RESOLUTION.w, _G.RESOLUTION.h)
     self.level = level.new()
     self.level:spawn(player)
-    self.font = bmfont.new_font("assets/font.png")
+    self.font = bmfont.new_font("assets/utils/font.png")
 end
 
 function game:tick(dt)
