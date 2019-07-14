@@ -9,6 +9,9 @@ local Layer_mt = {}
 function gui.init()
     gui.style = {
         font = font.new_font(graphics.new_image("assets/utils/font.png"), -11, -3, 0.35),
+        panel = {
+            color = {0.3, 0.3, 0.3, 0.5}
+        },
         button = {
             default_color = {0.3, 0.3, 0.3, 1},
             hot_color = {0.5, 0.1, 0.1, 1},
@@ -65,6 +68,11 @@ end
 -- luacheck: push ignore self
 function Layer_mt:pop()
     pop_id()
+end
+
+function Layer_mt:panel(x, y, w, h)
+    graphics.set_draw_color(table.unpack(gui.style.panel.color))
+    graphics.draw_filled_rect(x, y, w, h)
 end
 -- luacheck: pop
 
