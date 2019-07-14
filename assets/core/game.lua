@@ -3,7 +3,9 @@ local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local level = require("assets.core.level")
 local bmfont = require("assets.utils.font")
+local gui = require("assets.utils.gui")
 local player = require("assets.player.player")
+local edtmenu = require("assets.editor.menu")
 local keys = keyboard.keys
 
 local game = {}
@@ -13,6 +15,11 @@ _G.RESOLUTION = {w = 640, h = 360}
 function game:start()
     window.set_size(1280, 720)
     graphics.set_resolution(_G.RESOLUTION.w, _G.RESOLUTION.h)
+    gui.init()
+
+    -- open editor by default
+    edtmenu.open()
+
     self.level = level.new()
     self.level:spawn(player)
     local image = graphics.new_image("assets/utils/font.png")
@@ -31,15 +38,7 @@ end
 
 function game:draw(dt)
     self.level:draw(dt)
-    graphics.set_draw_color(0.5, 0.5, 0.5, 1)
-    graphics.draw_rect((640 / 2) - (240 / 2), 360 - 120, 240, 100)
-    graphics.set_draw_color(1, 1, 1, 1)
-    self.font:print(
-        (640 / 2) - (240 / 2) + 10,
-        (360 - 120) + 10,
-        "You have picked up a [item] plank [defcolor] [+] !",
-        21
-    )
+    edtmenu.draw()
 end
 
 -- luacheck: push ignore self

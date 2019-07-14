@@ -124,7 +124,38 @@ local function new_font(image, marginx, marginy, scale)
     return self
 end
 
-function Font_mt:print(x, y, text, wrapat)
+function Font_mt:print_bound(x, y, w, h, text)
+    self.currlinex = 0
+    self.currliney = 0
+    local len = #text
+    local txtw, txth = len * self.spacex, self.spacey
+    local drawx, drawy = x + ((w - txtw) / 2), y + ((h - txth) / 2) + 2
+    for i = 1, #text do
+        local currchar = string.sub(text, i, i)
+        local cols = self.columns
+        local charw, charh = self.char_width, self.char_height
+        local idx = font.char_map[string.lower(currchar)]
+        local row = math.floor((idx - 1) / cols)
+        local col = math.floor((idx - 1) % cols)
+        local srcx = col * charw
+        local srcy = row * charh
+        graphics.drawx(
+            self.image,
+            drawx + self.currlinex,
+            drawy + self.currliney,
+            srcx,
+            srcy,
+            charw,
+            charh,
+            self.scale,
+            self.scale,
+            0
+        )
+        self.currlinex = self.currlinex + self.spacex
+    end
+end
+
+function Font_mt:printx(x, y, text, wrapat)
     self.linex = x
     self.liney = y
     self.currlinex = x
