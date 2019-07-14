@@ -10,7 +10,7 @@ function gui.init()
     gui.style = {
         font = font.new_font(graphics.new_image("assets/utils/font.png"), -11, -3, 0.35),
         panel = {
-            color = {0.3, 0.3, 0.3, 0.5}
+            color = {0.3, 0.3, 0.3, 0.7}
         },
         button = {
             default_color = {0.3, 0.3, 0.3, 1},
