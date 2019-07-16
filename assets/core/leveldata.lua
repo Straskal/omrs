@@ -1,3 +1,4 @@
+-- possible implementation
 return {
     name = "level-1",
     tilemap = {

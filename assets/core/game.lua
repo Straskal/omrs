@@ -1,11 +1,7 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local gui = require("assets.utils.gui")
-local playstate = require("assets.core.playstate")
 local keys = keyboard.keys
-
-_G.RESOLUTION = {w = 640, h = 360}
 
 local game = {
     state_stack = {}
@@ -13,35 +9,61 @@ local game = {
 
 function game:push_state(state)
     table.insert(self.state_stack, state)
-    state:enter()
+    if state.on_enter then
+        state:on_enter(self)
+    end
 end
 
 function game:pop_state()
-    self.state_stack[#self.state_stack]:exit()
-    table.remove(self.state_stack)
+    local len = #self.state_stack
+    if len > 0 and self.state_stack[len].on_exit then
+        self.state_stack[#self.state_stack]:on_exit(self)
+        table.remove(self.state_stack)
+    end
 end
 
+function game:switch_state(state)
+    while #self.state_stack > 0 do
+        self:pop_state()
+    end
+    self:push_state(state)
+end
+
+-- luacheck: push ignore self
 function game:start()
+    window.set_title("Old Man Rage Strength")
     window.set_size(1280, 720)
-    graphics.set_resolution(_G.RESOLUTION.w, _G.RESOLUTION.h)
-    gui.init()
-
-    self:push_state(playstate.new())
+    graphics.set_resolution(640, 360)
 end
+-- luacheck: pop
 
 function game:tick(dt)
+    -- for development ----------------------------------
     if keyboard.is_key_released(keys.ESCAPE) then
         window.close()
     end
     if keyboard.is_key_released(keys.F) then
         window.set_fullscreen(not window.is_fullscreen())
     end
-    self.state_stack[#self.state_stack]:tick(self, dt)
+    -----------------------------------------------------
+
+    -- attempt to tick all states from top to bottom
+    for i = #self.state_stack, 1, -1 do
+        self.state_stack[i]:tick(self, dt)
+        if not self.state_stack[i].update_below then
+            break
+        end
+    end
 end
 
 function game:draw(dt)
-    for i = 1, #self.state_stack do
-        self.state_stack[i]:draw(self, dt)
+    -- attempt to draw all states from bottom to top
+    local len = #self.state_stack
+    for i = 1, len do
+        local above = self.state_stack[i + 1]
+        if (not above) or above.draw_below then
+            self.state_stack[i]:draw(self, dt)
+        end
     end
 end
 
