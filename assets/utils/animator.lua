@@ -1,6 +1,7 @@
 local animator = {}
 local Animator_mt = {}
 
+-- TODO
 function Animator_mt:configure(config)
     self.frame_width = config.frame_width
     self.frame_height = config.frame_height

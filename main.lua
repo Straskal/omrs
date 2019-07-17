@@ -2,7 +2,11 @@ local milk = require("milk")
 local window = require("milk.window")
 local time = require("milk.time")
 local graphics = require("milk.graphics")
-local game = require("assets.core.game")
+
+-- set extra search path for assets
+package.path = package.path .. ";assets/?.lua"
+
+local game = require("core.game")
 
 local start = game.start or function() end
 local tick = game.tick or function() end

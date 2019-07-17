@@ -1,6 +1,7 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
+local editstate = require("core.editstate")
 local keys = keyboard.keys
 
 local game = {
@@ -34,6 +35,8 @@ function game:start()
     window.set_title("Old Man Rage Strength")
     window.set_size(1280, 720)
     graphics.set_resolution(640, 360)
+
+    self:push_state(editstate)
 end
 -- luacheck: pop
 
@@ -49,7 +52,7 @@ function game:tick(dt)
 
     -- attempt to tick all states from top to bottom
     for i = #self.state_stack, 1, -1 do
-        self.state_stack[i]:tick(self, dt)
+        self.state_stack[i]:on_tick(self, dt)
         if not self.state_stack[i].update_below then
             break
         end
@@ -62,7 +65,7 @@ function game:draw(dt)
     for i = 1, len do
         local above = self.state_stack[i + 1]
         if (not above) or above.draw_below then
-            self.state_stack[i]:draw(self, dt)
+            self.state_stack[i]:on_draw(self, dt)
         end
     end
 end

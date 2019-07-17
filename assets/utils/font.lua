@@ -1,5 +1,6 @@
 local graphics = require("milk.graphics")
 
+-- TODO
 local font = {}
 local Font_mt = {}
 
@@ -75,34 +76,7 @@ font.char_map = {
     ["_"] = 64
 }
 
---[[
-    different commands to call from text
---]]
-font.commands = {
-    -- items are display as yellow text
-    item = function()
-        graphics.set_draw_color(1, 1, 0, 1)
-    end,
-    -- returns the draw color back to its default
-    defcolor = function()
-        graphics.set_draw_color(1, 1, 1, 1)
-    end,
-    -- inserts and extra space
-    sp = function(fnt)
-        fnt.currlinex = fnt.currlinex + fnt.spacex
-    end,
-    -- ends the current line
-    endl = function(fnt)
-        fnt.currlinex = fnt.linex
-        fnt.currliney = fnt.currliney + fnt.spacey
-    end,
-    -- concatenate two tokens together instead of putting a space inbetween
-    ["+"] = function(fnt)
-        fnt.currlinex = fnt.currlinex - fnt.spacex
-    end
-}
-
-local function new_font(image, marginx, marginy, scale)
+local function new(image, marginx, marginy, scale)
     local self = {}
     self.image = image
     self.marginx = marginx
@@ -122,6 +96,34 @@ local function new_font(image, marginx, marginy, scale)
     self.currliney = 0
     setmetatable(self, {__index = Font_mt})
     return self
+end
+
+function Font_mt:print(x, y, text)
+    self.currlinex = 0
+    local len = #text
+    for i = 1, len do
+        local currchar = string.sub(text, i, i)
+        local cols = self.columns
+        local charw, charh = self.char_width, self.char_height
+        local idx = font.char_map[string.lower(currchar)]
+        local row = math.floor((idx - 1) / cols)
+        local col = math.floor((idx - 1) % cols)
+        local srcx = col * charw
+        local srcy = row * charh
+        graphics.drawx(
+            self.image,
+            x + self.currlinex,
+            y + self.currliney,
+            srcx,
+            srcy,
+            charw,
+            charh,
+            self.scale,
+            self.scale,
+            0
+        )
+        self.currlinex = self.currlinex + self.spacex
+    end
 end
 
 function Font_mt:print_bound(x, y, w, h, text)
@@ -155,52 +157,6 @@ function Font_mt:print_bound(x, y, w, h, text)
     end
 end
 
-function Font_mt:printx(x, y, text, wrapat)
-    self.linex = x
-    self.liney = y
-    self.currlinex = x
-    self.currliney = y
-
-    -- split text up by whitespace
-    local tokens = {}
-    for tok in text:gmatch("%S+") do
-        table.insert(tokens, tok)
-    end
-
-    for i = 1, #tokens do
-        local currtoken = tokens[i]
-        local len = #currtoken
-        -- first check to see if we need to execute a command
-        if string.sub(currtoken, 1, 1) == "[" and string.sub(currtoken, len, len) == "]" then
-            local cmd = string.sub(currtoken, 2, len - 1)
-            font.commands[cmd](self)
-            -- remove whitespace that was entered for command syntax
-            self.currlinex = self.currlinex - self.spacex
-        else
-            local linew = (self.currlinex - self.linex) + (len * self.spacex)
-            if wrapat and (linew > (wrapat * self.spacex)) then
-                self.currlinex = self.linex
-                self.currliney = self.currliney + self.spacey
-            end
-            local j = 1
-            while j <= len do
-                local currchar = string.sub(currtoken, j, j)
-                local cols = self.columns
-                local w, h = self.char_width, self.char_height
-                local idx = font.char_map[string.lower(currchar)]
-                local row = math.floor((idx - 1) / cols)
-                local col = math.floor((idx - 1) % cols)
-                local srcx = col * w
-                local srcy = row * h
-                graphics.drawx(self.image, self.currlinex, self.currliney, srcx, srcy, w, h, self.scale, self.scale, 0)
-                self.currlinex = self.currlinex + self.spacex
-                j = j + 1
-            end
-        end
-        self.currlinex = self.currlinex + self.spacex
-    end
-end
-
 return {
-    new_font = new_font
+    new = new
 }
