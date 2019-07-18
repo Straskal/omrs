@@ -1,7 +1,8 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local editstate = require("core.editstate")
+local gui = require("utils.gui")
+local editstate = require("editor.editstate")
 local keys = keyboard.keys
 
 local game = {
@@ -30,15 +31,15 @@ function game:switch_state(state)
     self:push_state(state)
 end
 
--- luacheck: push ignore self
 function game:start()
     window.set_title("Old Man Rage Strength")
     window.set_size(1280, 720)
     graphics.set_resolution(640, 360)
 
+    gui:init()
+
     self:push_state(editstate)
 end
--- luacheck: pop
 
 function game:tick(dt)
     -- for development ----------------------------------

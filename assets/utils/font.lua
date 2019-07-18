@@ -1,8 +1,6 @@
 local graphics = require("milk.graphics")
 
--- TODO
 local font = {}
-local Font_mt = {}
 
 --[[
     http://www.codehead.co.uk/cbfg/ is a tool for generating bit map font images from ttfs.
@@ -77,29 +75,29 @@ font.char_map = {
 }
 
 local function new(image, marginx, marginy, scale)
-    local self = {}
-    self.image = image
-    self.marginx = marginx
-    self.marginy = marginy
-    self.scale = scale
+    local instance = {}
+    instance.image = image
+    instance.marginx = marginx
+    instance.marginy = marginy
+    instance.scale = scale
 
-    local w, h = self.image:get_size()
-    self.rows = 8 -- default for cbfg
-    self.columns = 8 -- default for cbfg
-    self.char_width = w / self.columns
-    self.char_height = h / self.rows
-    self.spacex = (self.char_width + self.marginx) * self.scale
-    self.spacey = (self.char_height + self.marginy) * self.scale
-    self.linex = 0
-    self.liney = 0
-    self.currlinex = 0
-    self.currliney = 0
-    setmetatable(self, {__index = Font_mt})
-    return self
+    local w, h = instance.image:get_size()
+    instance.rows = 8 -- default for cbfg
+    instance.columns = 8 -- default for cbfg
+    instance.char_width = w / instance.columns
+    instance.char_height = h / instance.rows
+    instance.spacex = (instance.char_width + instance.marginx) * instance.scale
+    instance.spacey = (instance.char_height + instance.marginy) * instance.scale
+    instance.linex = 0
+    instance.liney = 0
+    instance.currlinex = 0
+    instance.currliney = 0
+    setmetatable(instance, {__index = font})
+    return instance
 end
 
-function Font_mt:print(x, y, text)
-    self.currlinex = 0
+function font:print(x, y, text)
+    local currlinex = 0
     local len = #text
     for i = 1, len do
         local currchar = string.sub(text, i, i)
@@ -112,8 +110,8 @@ function Font_mt:print(x, y, text)
         local srcy = row * charh
         graphics.drawx(
             self.image,
-            x + self.currlinex,
-            y + self.currliney,
+            x + currlinex,
+            y,
             srcx,
             srcy,
             charw,
@@ -122,38 +120,7 @@ function Font_mt:print(x, y, text)
             self.scale,
             0
         )
-        self.currlinex = self.currlinex + self.spacex
-    end
-end
-
-function Font_mt:print_bound(x, y, w, h, text)
-    self.currlinex = 0
-    self.currliney = 0
-    local len = #text
-    local txtw, txth = len * self.spacex, self.spacey
-    local drawx, drawy = x + ((w - txtw) / 2), y + ((h - txth) / 2) + 2
-    for i = 1, #text do
-        local currchar = string.sub(text, i, i)
-        local cols = self.columns
-        local charw, charh = self.char_width, self.char_height
-        local idx = font.char_map[string.lower(currchar)]
-        local row = math.floor((idx - 1) / cols)
-        local col = math.floor((idx - 1) % cols)
-        local srcx = col * charw
-        local srcy = row * charh
-        graphics.drawx(
-            self.image,
-            drawx + self.currlinex,
-            drawy + self.currliney,
-            srcx,
-            srcy,
-            charw,
-            charh,
-            self.scale,
-            self.scale,
-            0
-        )
-        self.currlinex = self.currlinex + self.spacex
+        currlinex = currlinex + self.spacex
     end
 end
 
