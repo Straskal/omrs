@@ -16,7 +16,7 @@ function gui:init()
     self.style = {
         font = font.new(graphics.new_image("assets/utils/font.png"), -11, -3, 0.35),
         panel = {
-            color = {0.3, 0.3, 0.3, 0.7}
+            color = {0, 0, 0, 0.6}
         },
         button = {
             default_color = {0.3, 0.3, 0.3, 1},
@@ -61,6 +61,7 @@ end
 function gui:panel(x, y, w, h)
     graphics.set_draw_color(table.unpack(gui.style.panel.color))
     graphics.draw_filled_rect(x, y, w, h)
+    graphics.set_draw_color(1, 1, 1, 1)
 end
 -- luacheck: pop
 

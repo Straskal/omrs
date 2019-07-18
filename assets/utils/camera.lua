@@ -56,6 +56,11 @@ function Camera:draw_rect(x, y, w, h)
     graphics.draw_rect(vec[1][1], vec[2][1], w * self.zoom, h * self.zoom)
 end
 
+function Camera:draw_filled_rect(x, y, w, h)
+    local vec = self.tranmatrix:mul(matrix({x, y, 1}))
+    graphics.draw_filled_rect(vec[1][1], vec[2][1], w * self.zoom, h * self.zoom)
+end
+
 return {
     new = new
 }
