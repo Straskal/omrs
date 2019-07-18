@@ -2,7 +2,7 @@ local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local gui = require("utils.gui")
-local editstate = require("editor.editstate")
+local editor = require("editor.editor")
 local keys = keyboard.keys
 
 local game = {
@@ -38,7 +38,7 @@ function game:start()
 
     gui:init()
 
-    self:push_state(editstate)
+    self:push_state(editor)
 end
 
 function game:tick(dt)

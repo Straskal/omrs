@@ -6,6 +6,7 @@ local mousebuttons = mouse.buttons
 local keys = keyboard.keys
 
 local tilemaptools = {
+    display_name = "tile",
     current_tile = 1
 }
 
@@ -14,11 +15,11 @@ end
 
 function tilemaptools:handle_input(editstate)
     editstate.camera:calc_matrix()
-    local msx, msy = editstate.camera:screen2world(editstate.mousex, editstate.mousey)
+    local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
 
     if mouse.is_button_down(mousebuttons.LEFT) then
-        local gridx = math.floor(msx / editstate.GRID_CELL_SIZE) + 1
-        local gridy = math.floor(msy / editstate.GRID_CELL_SIZE) + 1
+        local gridx = math.floor(msx / editstate.grid_cell_size) + 1
+        local gridy = math.floor(msy / editstate.grid_cell_size) + 1
         local tiles = editstate.level.tilemap.tiles
         if tiles[gridy] and tiles[gridy][gridx] then
             tiles[gridy][gridx] = self.current_tile
@@ -48,21 +49,32 @@ function tilemaptools:tick(editstate)
 end
 
 function tilemaptools:draw(editstate)
-    gui:panel(0, 0, 128, 640)
+    local panelw, panelh = 128, 640
+    gui:panel(0, 0, panelw, panelh)
 
-    local src = editstate.tileset.tiledefinitions[self.current_tile].src
-    graphics.drawx(
-        editstate.tilesheet,
-        10,
-        10,
-        src.x,
-        src.y,
-        editstate.GRID_CELL_SIZE,
-        editstate.GRID_CELL_SIZE,
-        1,
-        1,
-        0
-    )
+    local xpos = 0
+    local ypos = 0
+    local tiledefs = editstate.tileset.tiledefinitions
+    for i = 1, #tiledefs do
+        local src = tiledefs[i].src
+        graphics.drawx(
+            editstate.tilesheet,
+            xpos,
+            ypos,
+            src.x,
+            src.y,
+            editstate.grid_cell_size,
+            editstate.grid_cell_size,
+            1,
+            1,
+            0
+        )
+        xpos = xpos + editstate.grid_cell_size
+        if xpos + editstate.grid_cell_size > panelw then
+            xpos = 0
+            ypos = ypos + editstate.grid_cell_size
+        end
+    end
 end
 
 return tilemaptools

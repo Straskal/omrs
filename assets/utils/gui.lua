@@ -14,7 +14,7 @@ function gui:init()
         active_id = -1
     }
     self.style = {
-        font = font.new(graphics.new_image("assets/utils/font.png"), -11, -3, 0.35),
+        font = font.new(graphics.new_image("assets/utils/font.png"), -11, -3, 0.25),
         panel = {
             color = {0, 0, 0, 0.6}
         },

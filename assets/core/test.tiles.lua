@@ -16,6 +16,38 @@ return {
                 x = 32,
                 y = 0
             }
+        },
+        {
+            -- red
+            id = 3,
+            src = {
+                x = 64,
+                y = 0
+            }
+        },
+        {
+            -- pink
+            id = 3,
+            src = {
+                x = 96,
+                y = 0
+            }
+        },
+        {
+            -- poop
+            id = 3,
+            src = {
+                x = 0,
+                y = 32
+            }
+        },
+        {
+            -- blue poop
+            id = 3,
+            src = {
+                x = 32,
+                y = 32
+            }
         }
     }
 }

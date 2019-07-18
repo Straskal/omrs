@@ -45,10 +45,6 @@ while not window.should_close() do
         -- game logic
         tick(game, SECONDS_PER_TICK)
 
-        graphics.set_draw_color(0, 0, 0, 1)
-        graphics.clear()
-        graphics.set_draw_color(1, 1, 1, 1)
-
         -- draw logic
         draw(game, SECONDS_PER_TICK)
 
