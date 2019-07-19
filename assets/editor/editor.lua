@@ -14,7 +14,7 @@ local mousebuttons = mouse.buttons
     - command queue, undo and redo @matt ames
 --]]
 --=================================================
-local editstate = {
+local editor = {
     grid_cell_size = 32,
     grid_color = {0, 0, 0, 0.13},
     background_color = {0.2, 0.2, 0.31, 1},
@@ -79,7 +79,7 @@ end
 --=================================================
 -- OPENING THE EDITOR
 --=================================================
-function editstate:on_enter()
+function editor:on_enter()
     -- load level
     self.level = dofile("assets/core/test.lvl.lua")
     self.tileset = dofile(self.level.tilemap.tileset)
@@ -98,7 +98,7 @@ end
 --=================================================
 -- TICKING
 --=================================================
-function editstate:on_tick(_, dt)
+function editor:on_tick(_, dt)
     handle_mouse(self, dt)
     handle_keyboard(self)
     self.current_toolset:handle_input(self)
@@ -108,10 +108,10 @@ end
 -- DRAWING
 --=================================================
 local function draw_grid(self)
-    if self.options.showgrid then
-        local tiles = self.level.tilemap.tiles
-        graphics.set_draw_color(table.unpack(self.grid_color))
+    graphics.set_draw_color(table.unpack(self.grid_color))
+    local tiles = self.level.tilemap.tiles
 
+    if self.options.showgrid then
         for i = 1, #tiles do
             for j = 1, #tiles[1] do
                 -- TODO: draw_lines
@@ -123,6 +123,10 @@ local function draw_grid(self)
                 )
             end
         end
+    else
+        local h = #tiles
+        local w = #tiles[1]
+        self.camera:draw_rect(0, 0, self.grid_cell_size * w, self.grid_cell_size * h)
     end
 end
 
@@ -157,7 +161,8 @@ local function draw_map(self)
     end
 end
 
-function editstate:on_draw(_, _)
+function editor:on_draw(_, _)
+    gui:begin_draw()
     graphics.set_draw_color(table.unpack(self.background_color))
     graphics.clear()
     graphics.set_draw_color(1, 1, 1, 1)
@@ -171,11 +176,12 @@ function editstate:on_draw(_, _)
     -- draw mouse pos
     local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
     gui:label(10, 340, string.format("Mouse: %0.2f, %0.2f", msx, msy))
+    gui:end_draw()
 end
 
 -- luacheck: ignore
-function editstate:on_stop(_, dt)
+function editor:on_stop(_, dt)
 end
 -- luacheck: pop
 
-return editstate
+return editor

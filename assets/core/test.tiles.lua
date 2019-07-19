@@ -27,7 +27,7 @@ return {
         },
         {
             -- pink
-            id = 3,
+            id = 4,
             src = {
                 x = 96,
                 y = 0
@@ -35,7 +35,7 @@ return {
         },
         {
             -- poop
-            id = 3,
+            id = 5,
             src = {
                 x = 0,
                 y = 32
@@ -43,7 +43,7 @@ return {
         },
         {
             -- blue poop
-            id = 3,
+            id = 6,
             src = {
                 x = 32,
                 y = 32
