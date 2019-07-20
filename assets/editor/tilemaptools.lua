@@ -11,7 +11,7 @@ local mousebuttons = mouse.buttons
 --]]
 --=================================================
 local tilemaptools = {
-    panel = {w = 138, h = 640},
+    panel = {w = 138, h = 345},
     tile_grid = {},
     selected_tile = 0,
     selected_tile_src = {},
