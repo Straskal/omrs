@@ -38,7 +38,7 @@ local editor = {
     },
     navigation = {
         pan_speed = 40,
-        zoom_speed = 2,
+        zoom_speed = 1,
         kpan_speed = 200,
         kzoom_speed = 0.8
     },
