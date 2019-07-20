@@ -57,7 +57,7 @@ end
 --=================================================
 local function draw_tile_picker(self, editstate)
     local tilesheet = editstate.tilesheet
-    local cellsz = editstate.grid_cell_size
+    local cellsz = editstate.grid.cell_size
     local xoffset = self.tilepicker_offset.x
     local yoffset = self.tilepicker_offset.y
     for i = 1, #self.tile_grid do
@@ -74,13 +74,13 @@ end
 local function try_pick_tile(self, editstate)
     local xoffset = self.tilepicker_offset.x
     local yoffset = self.tilepicker_offset.y
-    local tilex = (math.floor((editstate.mouse_state.x - xoffset) / editstate.grid_cell_size) + 1)
-    local tiley = (math.floor((editstate.mouse_state.y - yoffset) / editstate.grid_cell_size) + 1)
+    local tilex = (math.floor((editstate.mouse_state.x - xoffset) / editstate.grid.cell_size) + 1)
+    local tiley = (math.floor((editstate.mouse_state.y - yoffset) / editstate.grid.cell_size) + 1)
     if self.tile_grid[tiley] and self.tile_grid[tiley][tilex] then
         self.selected_tile = self.tile_grid[tiley][tilex].id
         self.selected_tile_src.x, self.selected_tile_src.y =
-            ((tilex - 1) * editstate.grid_cell_size) + xoffset,
-            ((tiley - 1) * editstate.grid_cell_size) + yoffset
+            ((tilex - 1) * editstate.grid.cell_size) + xoffset,
+            ((tiley - 1) * editstate.grid.cell_size) + yoffset
     end
 end
 
@@ -90,8 +90,8 @@ local function highlight_selected_tile(self, editstate)
         graphics.draw_rect(
             self.selected_tile_src.x,
             self.selected_tile_src.y,
-            editstate.grid_cell_size,
-            editstate.grid_cell_size
+            editstate.grid.cell_size,
+            editstate.grid.cell_size
         )
     end
 end
@@ -101,8 +101,8 @@ end
 --=================================================
 local function switch_tile_at_mouse(editstate, newtile)
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
-    local gridx = math.floor(msx / editstate.grid_cell_size) + 1
-    local gridy = math.floor(msy / editstate.grid_cell_size) + 1
+    local gridx = math.floor(msx / editstate.grid.cell_size) + 1
+    local gridy = math.floor(msy / editstate.grid.cell_size) + 1
     local tiles = editstate.level.tilemap.tiles
     if tiles[gridy] and tiles[gridy][gridx] and tiles[gridy][gridx] ~= newtile then
         tiles[gridy][gridx] = newtile
