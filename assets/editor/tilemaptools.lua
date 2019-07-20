@@ -75,7 +75,7 @@ local function draw_tile_picker(self, editstate)
     for i = 1, #grid do
         for j = 1, #grid[i] do
             local src = grid[i][j].src
-            graphics.drawx(tilesheet, xoffset, yoffset, src.x, src.y, cellsz, cellsz, 1, 1, 0)
+            graphics.drawx(tilesheet, xoffset, yoffset, src[1], src[2], cellsz, cellsz, 1, 1, 0)
             xoffset = xoffset + cellsz
         end
         xoffset = 5

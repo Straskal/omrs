@@ -172,7 +172,7 @@ local function draw_map(self)
             -- if there is no tile here, skip drawing
             if tileid > 0 then
                 local tilesrc = tiledefs[tileid].src
-                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc.x, tilesrc.y, cellsz, cellsz, zoom, zoom, 0)
+                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
             end
             advancex = advancex + scaledcellsz
         end
