@@ -1,3 +1,4 @@
 # ignore exe and dlls
 *.exe
 *.dll
+profiles

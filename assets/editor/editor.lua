@@ -210,12 +210,14 @@ end
 --=================================================
 -- DRAWING COMMON INFO
 --=================================================
-local function draw_common_info(self)
+local function draw_common_info(self, game)
     -- bottom pannel
     gui:panel(0, 345, 640, 15)
 
     -- draw level name
     gui:label(350, 5, self.level.name)
+
+    gui:label(590, 5, string.format("FPS: %.0f", game.fps))
 
     -- draw cam pos, mouse pos, and zoom
     local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
@@ -225,7 +227,7 @@ local function draw_common_info(self)
     gui:label(615, 350, string.format("%.0f%%", self.camera:get_zoom_percentage()))
 end
 
-function editor:on_draw(_, _)
+function editor:on_draw(game, _)
     gui:begin_draw()
     graphics.set_draw_color(table.unpack(self.background_color))
     graphics.clear()
@@ -236,7 +238,7 @@ function editor:on_draw(_, _)
     draw_map(self)
     draw_grid(self)
     self.current_toolset:draw(self)
-    draw_common_info(self)
+    draw_common_info(self, game)
 
     gui:end_draw()
 end

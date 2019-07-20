@@ -1,12 +1,16 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
+local time = require("milk.time")
 local gui = require("utils.gui")
 local editor = require("editor.editor")
 local keys = keyboard.keys
 
 local game = {
-    state_stack = {}
+    state_stack = {},
+    numframes = 0,
+    framestart = 0,
+    fps = 0
 }
 
 function game:push_state(state)
@@ -42,6 +46,8 @@ function game:start()
 end
 
 function game:tick(dt)
+    self.framestart = time.get_total()
+
     -- for development ----------------------------------
     if keyboard.is_key_released(keys.ESCAPE) then
         window.close()
@@ -69,6 +75,9 @@ function game:draw(dt)
             self.state_stack[i]:on_draw(self, dt)
         end
     end
+
+    self.fps = self.numframes / time.get_total()
+    self.numframes = self.numframes + 1
 end
 
 -- luacheck: push ignore self

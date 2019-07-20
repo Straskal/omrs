@@ -8,10 +8,14 @@ package.path = package.path .. ";assets/?.lua"
 
 local game = require("core.game")
 
-local start = game.start or function() end
-local tick = game.tick or function() end
-local draw = game.draw or function() end
-local stop = game.stop or function() end
+local start = game.start or function()
+    end
+local tick = game.tick or function()
+    end
+local draw = game.draw or function()
+    end
+local stop = game.stop or function()
+    end
 
 -- initialize milk and it's libraries
 milk.init()
