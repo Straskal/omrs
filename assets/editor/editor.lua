@@ -145,6 +145,7 @@ local function draw_map(self)
     -- we transform the initial draw point once to avoid performing this costly operation for every single cell.
     local x, y = self.camera:transform_point(0, 0)
     local advancex, advancey = x, y
+    local tilesheet = self.tilesheet
     local tiles = self.level.tilemap.tiles
     local tiledefs = self.tileset.tiledefinitions
     local mapwidth = #tiles[1]
@@ -172,7 +173,7 @@ local function draw_map(self)
             -- if there is no tile here, skip drawing
             if tileid > 0 then
                 local tilesrc = tiledefs[tileid].src
-                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
+                graphics.drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
             end
             advancex = advancex + scaledcellsz
         end
