@@ -117,10 +117,6 @@ end
 --=================================================
 -- TODO: make command
 local function try_paint(self, editstate)
-    if self.tile_picker.selected == 0 then
-        return
-    end
-
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
     local gridx = math.floor(msx / editstate.grid.cell_size) + 1
     local gridy = math.floor(msy / editstate.grid.cell_size) + 1
@@ -129,34 +125,39 @@ local function try_paint(self, editstate)
     if mouse.is_button_down(mousebuttons.RIGHT) then
         -- erase and don't emulate selected tile on grid so we can see what we're erasing
         tiles[gridy][gridx] = 0
-    else
-        if tiles[gridy] and tiles[gridy][gridx] then
-            local tiledefs = editstate.tileset.tiledefinitions
-            local selected = self.tile_picker.selected
-            local tilesrc = tiledefs[selected].src
-            local zoom = editstate.camera.zoom
-            local cellsz = editstate.grid.cell_size
-            local scellsz = cellsz * zoom
-            local x, y = editstate.camera:transform_point(0, 0)
+        return
+    end
 
-            -- emulate selected tile on grid
-            graphics.drawx(
-                editstate.tilesheet,
-                x + ((gridx - 1) * scellsz),
-                y + ((gridy - 1) * scellsz),
-                tilesrc[1],
-                tilesrc[2],
-                cellsz,
-                cellsz,
-                zoom,
-                zoom,
-                0
-            )
+    if self.tile_picker.selected == 0 then
+        return
+    end
 
-            if mouse.is_button_down(mousebuttons.LEFT) then
-                -- paint
-                tiles[gridy][gridx] = selected
-            end
+    if tiles[gridy] and tiles[gridy][gridx] then
+        local tiledefs = editstate.tileset.tiledefinitions
+        local selected = self.tile_picker.selected
+        local tilesrc = tiledefs[selected].src
+        local zoom = editstate.camera.zoom
+        local cellsz = editstate.grid.cell_size
+        local scellsz = cellsz * zoom
+        local x, y = editstate.camera:transform_point(0, 0)
+
+        -- emulate selected tile on grid
+        graphics.drawx(
+            editstate.tilesheet,
+            x + ((gridx - 1) * scellsz),
+            y + ((gridy - 1) * scellsz),
+            tilesrc[1],
+            tilesrc[2],
+            cellsz,
+            cellsz,
+            zoom,
+            zoom,
+            0
+        )
+
+        if mouse.is_button_down(mousebuttons.LEFT) then
+            -- paint
+            tiles[gridy][gridx] = selected
         end
     end
 end
