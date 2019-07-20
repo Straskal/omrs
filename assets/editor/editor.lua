@@ -216,11 +216,11 @@ local function draw_common_info(self)
     gui:label(350, 5, self.level.name)
 
     -- draw cam pos, mouse pos, and zoom
-    gui:label(580, 350, string.format("Zoom: %.0f%%", self.camera:get_zoom_percentage()))
     local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
     gui:label(10, 350, string.format("Mouse: %0.2f, %0.2f", msx, msy))
     local cmx, cmy = self.camera.position[1], self.camera.position[2]
     gui:label(140, 350, string.format("Cam: %0.2f, %0.2f", cmx, cmy))
+    gui:label(580, 350, string.format("Zoom: %.0f%%", self.camera:get_zoom_percentage()))
 end
 
 function editor:on_draw(_, _)
