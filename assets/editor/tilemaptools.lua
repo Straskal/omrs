@@ -99,13 +99,13 @@ end
 --=================================================
 -- PAINTING
 --=================================================
-local function try_paint_tile(self, editstate)
+local function switch_tile_at_mouse(editstate, newtile)
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
     local gridx = math.floor(msx / editstate.grid_cell_size) + 1
     local gridy = math.floor(msy / editstate.grid_cell_size) + 1
     local tiles = editstate.level.tilemap.tiles
-    if tiles[gridy] and tiles[gridy][gridx] then
-        tiles[gridy][gridx] = self.selected_tile
+    if tiles[gridy] and tiles[gridy][gridx] and tiles[gridy][gridx] ~= newtile then
+        tiles[gridy][gridx] = newtile
     end
 end
 
@@ -120,12 +120,15 @@ function tilemaptools:draw(editstate)
     draw_left_panel(self)
     draw_tile_picker(self, editstate)
 
+    -- only focus on the left panel if we are hovering over it, else focus on the map editing
     if is_mouse_over(editstate.mouse_state.x, editstate.mouse_state.y, 0, 0, self.panel.w, self.panel.h) then
         if mouse.is_button_pressed(mousebuttons.LEFT) then
             try_pick_tile(self, editstate)
         end
     elseif mouse.is_button_down(mousebuttons.LEFT) and self.selected_tile ~= 0 then
-        try_paint_tile(self, editstate)
+        switch_tile_at_mouse(editstate, self.selected_tile)
+    elseif mouse.is_button_down(mousebuttons.RIGHT) then
+        switch_tile_at_mouse(editstate, 0)
     end
 
     highlight_selected_tile(self, editstate)

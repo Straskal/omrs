@@ -16,7 +16,7 @@ local mousebuttons = mouse.buttons
 --=================================================
 local editor = {
     grid_cell_size = 32,
-    grid_color = {0, 0, 0, 0.13},
+    grid_color = {0, 0, 0, 0.05},
     background_color = {0.2, 0.2, 0.31, 1},
     camera = camera.new(),
     mouse_state = {
@@ -105,58 +105,57 @@ function editor:on_tick(_, dt)
 end
 
 --=================================================
--- DRAWING
+-- DRAWING THE MAP
 --=================================================
-local function draw_grid(self)
-    graphics.set_draw_color(table.unpack(self.grid_color))
-    local tiles = self.level.tilemap.tiles
-
-    if self.options.showgrid then
-        for i = 1, #tiles do
-            for j = 1, #tiles[1] do
-                -- TODO: draw_lines
-                self.camera:draw_rect(
-                    (j - 1) * self.grid_cell_size,
-                    (i - 1) * self.grid_cell_size,
-                    self.grid_cell_size,
-                    self.grid_cell_size
-                )
-            end
-        end
-    else
-        local h = #tiles
-        local w = #tiles[1]
-        self.camera:draw_rect(0, 0, self.grid_cell_size * w, self.grid_cell_size * h)
-    end
-end
-
 local function draw_map(self)
+    local x, y = self.camera:transform_point(0, 0)
+    local advancex, advancey = x, y
     local tiles = self.level.tilemap.tiles
     local tiledefs = self.tileset.tiledefinitions
     local h = #tiles
     local w = #tiles[1]
+    local zoom = self.camera.zoom
+    local cellsz = self.grid_cell_size * self.camera.zoom
 
-    -- draw tilemap shadow
+    -- draw map shadow
     graphics.set_draw_color(0, 0, 0, 0.2)
-    self.camera:draw_filled_rect(5, 5, (w * self.grid_cell_size) + 5, (h * self.grid_cell_size) + 5)
+    local shadowx, shadowy = self.camera:transform_point(5, 5)
+    graphics.draw_filled_rect(shadowx, shadowy, (w * cellsz) + (5 * zoom), (h * cellsz) + (5 * zoom))
 
-    -- draw map
+    -- draw painted tiles
     graphics.set_draw_color(1, 1, 1, 1)
-    for i = 1, h do
-        for j = 1, w do
+    for i = 1, #tiles do
+        for j = 1, #tiles[1] do
             local tileid = tiles[i][j]
             if tileid > 0 then
                 local tilesrc = tiledefs[tileid].src
-                self.camera:draw(
-                    self.tilesheet,
-                    (j - 1) * self.grid_cell_size,
-                    (i - 1) * self.grid_cell_size,
-                    tilesrc.x,
-                    tilesrc.y,
-                    self.grid_cell_size,
-                    self.grid_cell_size
-                )
+                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc.x, tilesrc.y, 32, 32, zoom, zoom, 0)
             end
+            advancex = advancex + cellsz
+        end
+        advancex = x
+        advancey = advancey + cellsz
+    end
+end
+
+--=================================================
+-- DRAWING THE GRID
+--=================================================
+local function draw_grid(self)
+    if self.options.showgrid then
+        local tiles = self.level.tilemap.tiles
+        local cellsz = self.grid_cell_size * self.camera.zoom
+        local x, y = self.camera:transform_point(0, 0)
+        local advancex, advancey = x, y
+
+        graphics.set_draw_color(table.unpack(self.grid_color))
+        for _ = 1, #tiles do
+            for _ = 1, #tiles[1] do
+                graphics.draw_rect(advancex, advancey, cellsz, cellsz)
+                advancex = advancex + cellsz
+            end
+            advancex = x
+            advancey = advancey + cellsz
         end
     end
 end
@@ -173,9 +172,12 @@ function editor:on_draw(_, _)
     draw_grid(self)
     self.current_toolset:draw(self)
 
-    -- draw mouse pos
+    -- draw cam pos, mouse pos, and zoom
+    gui:label(580, 345, string.format("Zoom: %.0f%%", self.camera:get_zoom_percentage()))
+    local cmx, cmy = self.camera.position[1], self.camera.position[2]
+    gui:label(10, 335, string.format("Camera: %0.2f, %0.2f", cmx, cmy))
     local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
-    gui:label(10, 340, string.format("Mouse: %0.2f, %0.2f", msx, msy))
+    gui:label(10, 345, string.format(" Mouse: %0.2f, %0.2f", msx, msy))
     gui:end_draw()
 end
 

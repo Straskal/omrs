@@ -16,7 +16,7 @@ function gui:init()
     self.style = {
         font = font.new(graphics.new_image("assets/utils/font.png"), -11, -3, 0.25),
         panel = {
-            color = {0, 0, 0, 0.6}
+            color = {0, 0, 0, 0.75}
         },
         button = {
             default_color = {0.3, 0.3, 0.3, 1},

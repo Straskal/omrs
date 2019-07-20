@@ -1244,6 +1244,27 @@ end
 
 matrix.symbol = symbol
 
+--===========================================
+--[[
+	CUSTOM:
+	luamatrix creates a ton of tables which in turns makes for a gc hell
+	our custom functions modify references. its way faster.
+--]]
+--===========================================
+function matrix.multiply( m1, m2 )
+	-- multiply rows with columns
+	for i = 1,#m1 do
+		for j = 1,#m2[1] do
+			local num = m1[i][1] * m2[1][j]
+			for n = 2,#m1[1] do
+				num = num + m1[i][n] * m2[n][j]
+			end
+			m2[i][j] = num
+		end
+	end
+	return m2
+end
+
 
 -- return matrix
 return matrix

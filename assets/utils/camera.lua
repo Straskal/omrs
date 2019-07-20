@@ -6,7 +6,12 @@ Camera.__index = Camera
 
 local function new()
     local instance = {
-        tranmatrix = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
+        matrix = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
+        -- cache these so we aren't creating massive matrices all of the time
+        invmatrix = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
+        translation = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
+        view_translation = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
+        scale = matrix({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}),
         position = {0, 0},
         zoom = 1
     }
@@ -21,7 +26,7 @@ end
 
 function Camera:zoom_in(amount)
     local zoom = self.zoom + amount
-    if zoom < 5 then
+    if zoom < 3 then
         self.zoom = zoom
     end
 end
@@ -33,32 +38,53 @@ function Camera:zoom_out(amount)
     end
 end
 
-function Camera:screen2world(x, y)
-    local inv = matrix.invert(self.tranmatrix)
-    local posvec = inv:mul({{x},{y},{1}})
-    return posvec[1][1], posvec[2][1]
+function Camera:get_zoom_percentage()
+    return (self.zoom / 3.75) * 375
 end
 
 function Camera:calc_matrix()
-    local postranslation = matrix({{1, 0, -self.position[1]}, {0, 1, -self.position[2]}, {0, 0, 1}})
-    local zoomscale = matrix({{self.zoom, 0, 0}, {0, self.zoom, 0}, {0, 0, 1}})
-    local vptranslation = matrix({{1, 0, 640 * 0.5}, {0, 1, 360 * 0.5}, {0, 0, 1}})
-    self.tranmatrix = vptranslation * zoomscale * postranslation
+    self.translation[1][3] = -self.position[1]
+    self.translation[2][3] = -self.position[2]
+    self.scale[1][1] = self.zoom
+    self.scale[2][2] = self.zoom
+    self.view_translation[1][3] = 640 * 0.5
+    self.view_translation[2][3] = 360 * 0.5
+
+    self.matrix = self.view_translation * self.scale * self.translation
+    self.invmatrix = self.matrix:invert()
+end
+
+-- so we don't have to create one every frame
+local m = matrix({0, 0, 1})
+
+function Camera:screen2world(x, y)
+    m[1][1], m[2][1] = x, y
+    matrix.multiply(self.invmatrix, m)
+    return m[1][1], m[2][1]
+end
+
+function Camera:transform_point(x, y)
+    m[1][1], m[2][1] = x, y
+    matrix.multiply(self.matrix, m)
+    return m[1][1], m[2][1]
 end
 
 function Camera:draw(image, x, y, srcx, srcy, srcw, srch)
-    local vec = self.tranmatrix:mul(matrix({x, y, 1}))
-    graphics.drawx(image, vec[1][1], vec[2][1], srcx, srcy, srcw, srch, self.zoom, self.zoom, 0)
+    m[1][1], m[2][1] = x, y
+    matrix.multiply(self.matrix, m)
+    graphics.drawx(image, m[1][1], m[2][1], srcx, srcy, srcw, srch, self.zoom, self.zoom, 0)
 end
 
 function Camera:draw_rect(x, y, w, h)
-    local vec = self.tranmatrix:mul(matrix({x, y, 1}))
-    graphics.draw_rect(vec[1][1], vec[2][1], w * self.zoom, h * self.zoom)
+    m[1][1], m[2][1] = x, y
+    matrix.multiply(self.matrix, m)
+    graphics.draw_rect(m[1][1], m[2][1], w * self.zoom, h * self.zoom)
 end
 
 function Camera:draw_filled_rect(x, y, w, h)
-    local vec = self.tranmatrix:mul(matrix({x, y, 1}))
-    graphics.draw_filled_rect(vec[1][1], vec[2][1], w * self.zoom, h * self.zoom)
+    m[1][1], m[2][1] = x, y
+    matrix.multiply(self.matrix, m)
+    graphics.draw_filled_rect(m[1][1], m[2][1], w * self.zoom, h * self.zoom)
 end
 
 return {
