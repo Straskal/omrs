@@ -101,10 +101,10 @@ local function handle_keyboard(self, dt)
     end
 
     -- zoom with arrows
-    if keyboard.is_key_down(keys.UP) then
+    if keyboard.is_key_down(keys.E) then
         self.camera:zoom_in(self.navigation.kzoom_speed * dt)
     end
-    if keyboard.is_key_down(keys.DOWN) then
+    if keyboard.is_key_down(keys.Q) then
         self.camera:zoom_out(self.navigation.kzoom_speed * dt)
     end
 end

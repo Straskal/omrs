@@ -122,7 +122,7 @@ local function try_paint(self, editstate)
     local gridy = math.floor(msy / editstate.grid.cell_size) + 1
     local tiles = editstate.level.tilemap.tiles
 
-    if mouse.is_button_down(mousebuttons.RIGHT) then
+    if mouse.is_button_down(mousebuttons.RIGHT) and tiles[gridy] and tiles[gridy][gridx] then
         -- erase and don't emulate selected tile on grid so we can see what we're erasing
         tiles[gridy][gridx] = 0
         return
