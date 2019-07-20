@@ -69,24 +69,6 @@ function Camera:transform_point(x, y)
     return m[1][1], m[2][1]
 end
 
-function Camera:draw(image, x, y, srcx, srcy, srcw, srch)
-    m[1][1], m[2][1] = x, y
-    matrix.multiply(self.matrix, m)
-    graphics.drawx(image, m[1][1], m[2][1], srcx, srcy, srcw, srch, self.zoom, self.zoom, 0)
-end
-
-function Camera:draw_rect(x, y, w, h)
-    m[1][1], m[2][1] = x, y
-    matrix.multiply(self.matrix, m)
-    graphics.draw_rect(m[1][1], m[2][1], w * self.zoom, h * self.zoom)
-end
-
-function Camera:draw_filled_rect(x, y, w, h)
-    m[1][1], m[2][1] = x, y
-    matrix.multiply(self.matrix, m)
-    graphics.draw_filled_rect(m[1][1], m[2][1], w * self.zoom, h * self.zoom)
-end
-
 return {
     new = new
 }

@@ -29,6 +29,7 @@ local editor = {
     options = {
         showgrid = true,
         panspeed = 40,
+        kpanspeed = 200,
         zoomspeed = 2
     },
     leveldata = nil,
@@ -66,13 +67,26 @@ end
 --=================================================
 -- KEYBOARD SHORTCUTS
 --=================================================
-local function handle_keyboard(self)
+local function handle_keyboard(self, dt)
     -- SHIFT +
     if keyboard.is_key_down(keys.LSHIFT) then
         -- G: toggle grid
         if keyboard.is_key_released(keys.G) then
             self.options.showgrid = not self.options.showgrid
         end
+    end
+    -- pan with arrows
+    if keyboard.is_key_down(keys.W) then
+        self.camera:move(0, -self.options.kpanspeed * dt)
+    end
+    if keyboard.is_key_down(keys.S) then
+        self.camera:move(0, self.options.kpanspeed * dt)
+    end
+    if keyboard.is_key_down(keys.A) then
+        self.camera:move(-self.options.kpanspeed * dt, 0)
+    end
+    if keyboard.is_key_down(keys.D) then
+        self.camera:move(self.options.kpanspeed * dt, 0)
     end
 end
 
@@ -100,7 +114,7 @@ end
 --=================================================
 function editor:on_tick(_, dt)
     handle_mouse(self, dt)
-    handle_keyboard(self)
+    handle_keyboard(self, dt)
     self.current_toolset:handle_input(self)
 end
 
@@ -108,33 +122,37 @@ end
 -- DRAWING THE MAP
 --=================================================
 local function draw_map(self)
+    -- we transform the initial draw point of the map one time. we want avoid doing this alot.
     local x, y = self.camera:transform_point(0, 0)
+    -- used advance the next draw position
     local advancex, advancey = x, y
     local tiles = self.level.tilemap.tiles
     local tiledefs = self.tileset.tiledefinitions
     local h = #tiles
     local w = #tiles[1]
     local zoom = self.camera.zoom
-    local cellsz = self.grid_cell_size * self.camera.zoom
+    local cellsz = self.grid_cell_size
+    local scaledcellsz = cellsz * self.camera.zoom
 
-    -- draw map shadow
+    -- draw map shadow - a rect with an x and y offset of 5
     graphics.set_draw_color(0, 0, 0, 0.2)
     local shadowx, shadowy = self.camera:transform_point(5, 5)
-    graphics.draw_filled_rect(shadowx, shadowy, (w * cellsz) + (5 * zoom), (h * cellsz) + (5 * zoom))
+    graphics.draw_filled_rect(shadowx, shadowy, (w * scaledcellsz) + (5 * zoom), (h * scaledcellsz) + (5 * zoom))
 
     -- draw painted tiles
     graphics.set_draw_color(1, 1, 1, 1)
     for i = 1, #tiles do
         for j = 1, #tiles[1] do
             local tileid = tiles[i][j]
+            -- 0 is not a valid id
             if tileid > 0 then
                 local tilesrc = tiledefs[tileid].src
-                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc.x, tilesrc.y, 32, 32, zoom, zoom, 0)
+                graphics.drawx(self.tilesheet, advancex, advancey, tilesrc.x, tilesrc.y, cellsz, cellsz, zoom, zoom, 0)
             end
-            advancex = advancex + cellsz
+            advancex = advancex + scaledcellsz
         end
         advancex = x
-        advancey = advancey + cellsz
+        advancey = advancey + scaledcellsz
     end
 end
 
@@ -143,19 +161,21 @@ end
 --=================================================
 local function draw_grid(self)
     if self.options.showgrid then
-        local tiles = self.level.tilemap.tiles
-        local cellsz = self.grid_cell_size * self.camera.zoom
+        -- we transform the initial draw point of the map one time. we want avoid doing this alot.
         local x, y = self.camera:transform_point(0, 0)
+        -- used advance the next draw position
         local advancex, advancey = x, y
+        local tiles = self.level.tilemap.tiles
+        local scaledcellsz = self.grid_cell_size * self.camera.zoom
 
         graphics.set_draw_color(table.unpack(self.grid_color))
         for _ = 1, #tiles do
             for _ = 1, #tiles[1] do
-                graphics.draw_rect(advancex, advancey, cellsz, cellsz)
-                advancex = advancex + cellsz
+                graphics.draw_rect(advancex, advancey, scaledcellsz, scaledcellsz)
+                advancex = advancex + scaledcellsz
             end
             advancex = x
-            advancey = advancey + cellsz
+            advancey = advancey + scaledcellsz
         end
     end
 end
