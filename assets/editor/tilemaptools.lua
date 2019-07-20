@@ -7,7 +7,12 @@ local mousebuttons = mouse.buttons
 -- TILE MAP TOOL STATE
 --[[
     TODO:
-    - undo, redo for paint tools @matt ames
+    - command queue, undo and redo @matt ames
+    - layers
+    - bucket tools
+    - brush size
+    - line drawing
+    - square drawing
 --]]
 --=================================================
 local tilemaptools = {
@@ -78,6 +83,7 @@ local function draw_tile_picker(self, editstate)
     end
 end
 
+-- TODO: make command
 local function try_pick_tile(self, editstate)
     local grid = self.tile_picker.grid
     local xoffset = self.tile_picker.offset.x
@@ -109,6 +115,7 @@ end
 --=================================================
 -- PAINTING
 --=================================================
+-- TODO: make command
 local function switch_tile_at_mouse(editstate, newtile)
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
     local gridx = math.floor(msx / editstate.grid.cell_size) + 1
