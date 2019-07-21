@@ -13,6 +13,7 @@ local mousebuttons = mouse.buttons
 --[[
     TODO:
     - command queue, undo and redo @matt ames
+    - auto populate new/existing layers with data
 --]]
 --=================================================
 local editor = {
