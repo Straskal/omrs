@@ -93,6 +93,46 @@ local function handle_keyboard(self, dt)
         if keyboard.is_key_released(keys.O) then
             self.map.onion = not self.map.onion
         end
+        -- DOWN: add row to map
+        if keyboard.is_key_released(keys.DOWN) then
+            local tilemap = self.level.tilemap
+            tilemap.height = tilemap.height + 1
+
+            for i = 1, #tilemap.layers do
+                tilemap.layers[i][tilemap.height] = {}
+
+                for j = 1, tilemap.width do
+                    tilemap.layers[i][tilemap.height][j] = 0
+                end
+            end
+        end
+        -- UP: remove row from map
+        if keyboard.is_key_released(keys.UP) then
+            local tilemap = self.level.tilemap
+
+            for i = 1, #tilemap.layers do
+                tilemap.layers[i][tilemap.height] = nil
+            end
+            tilemap.height = tilemap.height - 1
+        end
+        -- RIGHT: add column to map
+        if keyboard.is_key_released(keys.RIGHT) then
+            self.level.tilemap.width = self.level.tilemap.width + 1
+            for i = 1, #self.level.tilemap.layers do
+                for j = 1, #self.level.tilemap.layers[i] do
+                    self.level.tilemap.layers[i][j][self.level.tilemap.width] = 0
+                end
+            end
+        end
+        -- LEFT: remove column from map
+        if keyboard.is_key_released(keys.LEFT) then
+            for i = 1, #self.level.tilemap.layers do
+                for j = 1, #self.level.tilemap.layers[i] do
+                    self.level.tilemap.layers[i][j][self.level.tilemap.width] = nil
+                end
+            end
+            self.level.tilemap.width = self.level.tilemap.width - 1
+        end
     end
 
     -- toggle layer
