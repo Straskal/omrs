@@ -1,4 +1,3 @@
-local graphics = require("milk.graphics")
 local matrix = require("thirdparty.matrix")
 
 local Camera = {}

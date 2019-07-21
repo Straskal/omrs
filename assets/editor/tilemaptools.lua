@@ -21,7 +21,7 @@ local tilemaptools = {
         grid = {},
         selected = 0,
         selected_src = {},
-        offset = {x = 5, y = 15},
+        offset = {x = 5, y = 30},
         selected_color = {1, 1, 1, 1}
     }
 }
@@ -120,7 +120,7 @@ local function try_paint(self, editstate)
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
     local gridx = math.floor(msx / editstate.grid.cell_size) + 1
     local gridy = math.floor(msy / editstate.grid.cell_size) + 1
-    local tiles = editstate.level.tilemap.tiles
+    local tiles = editstate.level.tilemap.layers[editstate.map.selected_layer]
 
     if mouse.is_button_down(mousebuttons.RIGHT) and tiles[gridy] and tiles[gridy][gridx] then
         -- erase and don't emulate selected tile on grid so we can see what we're erasing

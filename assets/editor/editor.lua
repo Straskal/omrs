@@ -2,9 +2,9 @@ local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local mouse = require("milk.mouse")
-local camera = require("utils.camera")
-local gui = require("utils.gui")
+local camera = require("editor.camera")
 local tilemaptools = require("editor.tilemaptools")
+local gui = require("utils.gui")
 local keys = keyboard.keys
 local mousebuttons = mouse.buttons
 
@@ -24,6 +24,10 @@ local editor = {
         color = {0, 0, 0, 0.05}
     },
     map = {
+        default_width = 100,
+        default_height = 100,
+        selected_layer = 1,
+        onion = false,
         shadow = {
             offset = 5,
             color = {0, 0, 0, 0.2}
@@ -42,7 +46,6 @@ local editor = {
         kpan_speed = 200,
         kzoom_speed = 0.8
     },
-    leveldata = nil,
     current_toolset = tilemaptools
 }
 
@@ -84,6 +87,19 @@ local function handle_keyboard(self, dt)
         if keyboard.is_key_released(keys.G) then
             self.grid.show = not self.grid.show
         end
+        -- O: toggle map onion layers
+        if keyboard.is_key_released(keys.O) then
+            self.map.onion = not self.map.onion
+        end
+    end
+
+    -- toggle layer
+    if keyboard.is_key_pressed(keys.TAB) then
+        local nextlayer = self.map.selected_layer + 1
+        if nextlayer > #self.level.tilemap.layers then
+            nextlayer = 1
+        end
+        self.map.selected_layer = nextlayer
     end
 
     -- pan with WASD
@@ -120,9 +136,12 @@ function editor:on_enter()
     self.tileset = dofile(self.level.tilemap.tileset)
     self.tilesheet = graphics.new_image(self.tileset.tilesheet)
 
+    self.level.tilemap.width = self.level.tilemap.width or self.map.default_width
+    self.level.tilemap.height = self.level.tilemap.height or self.map.default_height
+
     -- center camera on level
-    local w = #self.level.tilemap.tiles[1] * self.grid.cell_size
-    local h = #self.level.tilemap.tiles * self.grid.cell_size
+    local w = self.level.tilemap.width * self.grid.cell_size
+    local h = self.level.tilemap.height * self.grid.cell_size
     self.camera.position[1], self.camera.position[2] = w * 0.5, h * 0.5
 
     -- open default tools
@@ -146,13 +165,13 @@ local function draw_map(self)
     local x, y = self.camera:transform_point(0, 0)
     local advancex, advancey = x, y
     local tilesheet = self.tilesheet
-    local tiles = self.level.tilemap.tiles
     local tiledefs = self.tileset.tiledefinitions
-    local mapwidth = #tiles[1]
-    local mapheight = #tiles
+    local mapwidth = self.level.tilemap.width
+    local mapheight = self.level.tilemap.height
     local zoom = self.camera.zoom
     local cellsz = self.grid.cell_size
     local scaledcellsz = cellsz * self.camera.zoom
+    local numlayers = #self.level.tilemap.layers
 
     -- draw map shadow
     graphics.set_draw_color(table.unpack(self.map.shadow.color))
@@ -165,20 +184,38 @@ local function draw_map(self)
         (mapheight * scaledcellsz) + (shadowoffset * zoom)
     )
 
-    -- draw painted tiles
-    graphics.set_draw_color(1, 1, 1, 1)
-    for i = 1, mapheight do
-        for j = 1, mapwidth do
-            local tileid = tiles[i][j]
-            -- if there is no tile here, skip drawing
-            if tileid > 0 then
-                local tilesrc = tiledefs[tileid].src
-                graphics.drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
+    -- draw painted layers
+    for i = 1, numlayers do
+        -- for onion skinning, draw all layers beneath a tad darker.
+        -- draw all layers above with uber transparency
+        -- this makes it easier to focus on the current layer thats being edited
+        if (self.map.onion) then
+            if i < self.map.selected_layer then
+                graphics.set_draw_color(0.25, 0.25, 0.25, 1)
+            elseif i > self.map.selected_layer then
+                graphics.set_draw_color(0.4, 0.4, 0.4, 0.07)
+            else
+                graphics.set_draw_color(1, 1, 1, 1)
             end
-            advancex = advancex + scaledcellsz
+        else
+            graphics.set_draw_color(1, 1, 1, 1)
         end
-        advancex = x
-        advancey = advancey + scaledcellsz
+
+        local layer = self.level.tilemap.layers[i]
+        for j = 1, mapheight do
+            for k = 1, mapwidth do
+                local tileid = layer[j][k]
+                -- if there is no tile here, skip drawing
+                if tileid > 0 then
+                    local tilesrc = tiledefs[tileid].src
+                    graphics.drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
+                end
+                advancex = advancex + scaledcellsz
+            end
+            advancex = x
+            advancey = advancey + scaledcellsz
+        end
+        advancex, advancey = x, y
     end
 end
 
@@ -190,10 +227,9 @@ local function draw_grid(self)
         -- we transform the initial draw point once to avoid performing this costly operation for every single cell.
         local x, y = self.camera:transform_point(0, 0)
         local advancex, advancey = x, y
-        local tiles = self.level.tilemap.tiles
         local scaledcellsz = self.grid.cell_size * self.camera.zoom
-        local mapwidth = #tiles[1]
-        local mapheight = #tiles
+        local mapwidth = self.level.tilemap.width
+        local mapheight = self.level.tilemap.height
 
         graphics.set_draw_color(table.unpack(self.grid.color))
         for _ = 1, mapheight do
@@ -217,13 +253,21 @@ local function draw_common_info(self, game)
     -- draw level name
     gui:label(350, 5, self.level.name)
 
+    -- draw fps
     gui:label(590, 5, string.format("FPS: %.0f", game.fps))
 
     -- draw cam pos, mouse pos, and zoom
     local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
     gui:label(10, 350, string.format("+ %.0f, %.0f", msx, msy))
+
     local cmx, cmy = self.camera.position[1], self.camera.position[2]
     gui:label(80, 350, string.format("[ ] %.0f, %.0f", cmx, cmy))
+
+    -- draw current layer num
+    local selectedlayer = self.map.selected_layer
+    local numlayers = #self.level.tilemap.layers
+    gui:label(160, 350, string.format("// %d/%d", selectedlayer, numlayers))
+
     gui:label(615, 350, string.format("%.0f%%", self.camera:get_zoom_percentage()))
 end
 
