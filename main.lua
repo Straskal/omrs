@@ -28,13 +28,12 @@ window.show()
 local TARGET_FPS = 60
 local SECONDS_PER_TICK = 1 / TARGET_FPS
 local frame_start_time = 0
-local frame_time
 local accumulated_frame_time = 0
 
 -- run at fixed time step of SECONDS_PER_TICK
 while not window.should_close() do
     local t = time.get_total()
-    frame_time = t - frame_start_time
+    local frame_time = t - frame_start_time
     frame_start_time = t
     accumulated_frame_time = accumulated_frame_time + frame_time
 
