@@ -13,10 +13,8 @@ local mousebuttons = mouse.buttons
 --[[
     TODO:
     - command queue, undo and redo @matt ames
-    - auto populate new/existing layers with data
-    - show/hide tilemap
+    - auto populate level data for empty files
     - show/hide gameobjects
-    - need to figure out how/if we need to separate gameobject entities from tilemaps.
 --]]
 --=================================================
 local editor = {
@@ -270,8 +268,12 @@ local function draw_common_info(self, game)
     -- draw current layer num
     local selectedlayer = self.map.selected_layer
     local numlayers = #self.level.tilemap.layers
+    if self.map.onion then
+        graphics.set_draw_color(1, 1, 0, 1)
+    end
     gui:label(160, 350, string.format("// %d/%d", selectedlayer, numlayers))
 
+    graphics.set_draw_color(1, 1, 1, 1)
     gui:label(615, 350, string.format("%.0f%%", self.camera:get_zoom_percentage()))
 end
 
