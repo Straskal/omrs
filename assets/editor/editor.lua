@@ -14,6 +14,9 @@ local mousebuttons = mouse.buttons
     TODO:
     - command queue, undo and redo @matt ames
     - auto populate new/existing layers with data
+    - show/hide tilemap
+    - show/hide gameobjects
+    - need to figure out how/if we need to separate gameobject entities from tilemaps.
 --]]
 --=================================================
 local editor = {

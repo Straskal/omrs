@@ -8,7 +8,6 @@ local mousebuttons = mouse.buttons
 --[[
     TODO:
     - command queue, undo and redo @matt ames
-    - layers
     - bucket tools
     - brush size
     - line drawing
