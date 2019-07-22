@@ -1,6 +1,6 @@
 local tiny = require("thirdparty.tiny")
 local graphics = require("milk.graphics")
-local playersystem = require("systems.playersystem")
+local updatesystem = require("systems.updatesystem")
 local rendersystem = require("systems.rendersystem")
 
 local gameplay = {}
@@ -8,7 +8,7 @@ local gameplay = {}
 function gameplay:on_enter()
 
     self.world = tiny.world()
-    self.world:addSystem(playersystem.new())
+    self.world:addSystem(updatesystem.new())
     self.world:addSystem(rendersystem.new())
 
     self.level = dofile("assets/core/test.lvl.lua")
