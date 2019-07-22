@@ -3,6 +3,9 @@ local graphics = require("milk.graphics")
 local font = require("assets.utils.font")
 local mouse_buttons = mouse.buttons
 
+local setdrawcolor = graphics.set_draw_color
+local drawfillrect = graphics.draw_filled_rect
+
 local gui = {}
 
 function gui:init()
@@ -59,9 +62,9 @@ end
 --==========================================================
 -- luacheck: push ignore self
 function gui:panel(x, y, w, h)
-    graphics.set_draw_color(table.unpack(gui.style.panel.color))
-    graphics.draw_filled_rect(x, y, w, h)
-    graphics.set_draw_color(1, 1, 1, 1)
+    setdrawcolor(table.unpack(gui.style.panel.color))
+    drawfillrect(x, y, w, h)
+    setdrawcolor(1, 1, 1, 1)
 end
 -- luacheck: pop
 
@@ -77,15 +80,15 @@ function gui:button(id, x, y, w, h, text)
     end
     if self.hot_id == id then
         if self.active_id == id then
-            graphics.set_draw_color(table.unpack(gui.style.button.active_color))
+            setdrawcolor(table.unpack(gui.style.button.active_color))
         else
-            graphics.set_draw_color(table.unpack(gui.style.button.hot_color))
+            setdrawcolor(table.unpack(gui.style.button.hot_color))
         end
     else
-        graphics.set_draw_color(table.unpack(gui.style.button.default_color))
+        setdrawcolor(table.unpack(gui.style.button.default_color))
     end
-    graphics.draw_filled_rect(x, y, w, h)
-    graphics.set_draw_color(1, 1, 1, 1)
+    drawfillrect(x, y, w, h)
+    setdrawcolor(1, 1, 1, 1)
     gui.style.font:print_bound(x, y, w, h, text)
     -- if button is not down but control is hot and active then the user has clicked this button
     return not self.is_down and self.hot_id == id and self.active_id == id

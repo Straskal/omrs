@@ -8,6 +8,11 @@ local gui = require("utils.gui")
 local keys = keyboard.keys
 local mousebuttons = mouse.buttons
 
+local setdrawcolor = graphics.set_draw_color
+local drawx = graphics.drawx
+local drawrect = graphics.draw_rect
+local drawfillrect = graphics.draw_filled_rect
+
 --=================================================
 -- EDITOR STATE
 --[[
@@ -221,10 +226,10 @@ local function draw_map(self)
     local numlayers = #self.level.tilemap.layers
 
     -- draw map shadow
-    graphics.set_draw_color(table.unpack(self.map.shadow.color))
+    setdrawcolor(table.unpack(self.map.shadow.color))
     local shadowoffset = self.map.shadow.offset
     local shadowx, shadowy = self.camera:transform_point(shadowoffset, shadowoffset)
-    graphics.draw_filled_rect(
+    drawfillrect(
         shadowx,
         shadowy,
         (mapwidth * scaledcellsz) + (shadowoffset * zoom),
@@ -238,14 +243,14 @@ local function draw_map(self)
         -- this makes it easier to focus on the current layer thats being edited
         if (self.map.onion) then
             if i < self.map.selected_layer then
-                graphics.set_draw_color(0.25, 0.25, 0.25, 1)
+                setdrawcolor(0.25, 0.25, 0.25, 1)
             elseif i > self.map.selected_layer then
-                graphics.set_draw_color(0.4, 0.4, 0.4, 0.07)
+                setdrawcolor(0.4, 0.4, 0.4, 0.07)
             else
-                graphics.set_draw_color(1, 1, 1, 1)
+                setdrawcolor(1, 1, 1, 1)
             end
         else
-            graphics.set_draw_color(1, 1, 1, 1)
+            setdrawcolor(1, 1, 1, 1)
         end
 
         local layer = self.level.tilemap.layers[i]
@@ -255,7 +260,7 @@ local function draw_map(self)
                 -- if there is no tile here, skip drawing
                 if tileid > 0 then
                     local tilesrc = tiledefs[tileid].src
-                    graphics.drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
+                    drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, zoom, zoom, 0)
                 end
                 advancex = advancex + scaledcellsz
             end
@@ -278,10 +283,10 @@ local function draw_grid(self)
         local mapwidth = self.level.tilemap.width
         local mapheight = self.level.tilemap.height
 
-        graphics.set_draw_color(table.unpack(self.grid.color))
+        setdrawcolor(table.unpack(self.grid.color))
         for _ = 1, mapheight do
             for _ = 1, mapwidth do
-                graphics.draw_rect(advancex, advancey, scaledcellsz, scaledcellsz)
+                drawrect(advancex, advancey, scaledcellsz, scaledcellsz)
                 advancex = advancex + scaledcellsz
             end
             advancex = x
@@ -314,27 +319,24 @@ local function draw_common_info(self, game)
     local selectedlayer = self.map.selected_layer
     local numlayers = #self.level.tilemap.layers
     if self.map.onion then
-        graphics.set_draw_color(1, 1, 0, 1)
+        setdrawcolor(1, 1, 0, 1)
     end
     gui:label(160, 350, string.format("// %d/%d", selectedlayer, numlayers))
 
-    graphics.set_draw_color(1, 1, 1, 1)
+    setdrawcolor(1, 1, 1, 1)
     gui:label(615, 350, string.format("%.0f%%", self.camera:get_zoom_percentage()))
 end
 
 function editor:on_draw(game, _)
     gui:begin_draw()
-    graphics.set_draw_color(table.unpack(self.background_color))
+    setdrawcolor(table.unpack(self.background_color))
     graphics.clear()
-    graphics.set_draw_color(1, 1, 1, 1)
-
+    setdrawcolor(1, 1, 1, 1)
     self.camera:calc_matrix()
-
     draw_map(self)
     draw_grid(self)
     self.current_toolset:draw(self)
     draw_common_info(self, game)
-
     gui:end_draw()
 end
 

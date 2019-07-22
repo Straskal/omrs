@@ -5,6 +5,10 @@ local gui = require("utils.gui")
 local mousebuttons = mouse.buttons
 local keys = keyboard.keys
 
+local setdrawcolor = graphics.set_draw_color
+local drawx = graphics.drawx
+local drawrect = graphics.draw_rect
+
 --=================================================
 -- TILE MAP TOOL STATE
 --[[
@@ -52,7 +56,7 @@ function tilemaptools:handle_input(editstate)
     local ms = editstate.mouse_state
 
     if keyboard.is_key_down(keys.LCTRL) then
-        if ms.scroll > 0  and self.brushsize < 10 then
+        if ms.scroll > 0 and self.brushsize < 10 then
             self.brushsize = self.brushsize + 1
         elseif ms.scroll < 0 and self.brushsize > 1 then
             self.brushsize = self.brushsize - 1
@@ -86,7 +90,7 @@ local function draw_tile_picker(self, editstate)
     for i = 1, #grid do
         for j = 1, #grid[i] do
             local src = grid[i][j].src
-            graphics.drawx(tilesheet, xoffset, yoffset, src[1], src[2], cellsz, cellsz, 1, 1, 0)
+            drawx(tilesheet, xoffset, yoffset, src[1], src[2], cellsz, cellsz, 1, 1, 0)
             xoffset = xoffset + cellsz
         end
         xoffset = 5
@@ -113,8 +117,8 @@ end
 
 local function highlight_selected_tile(self, editstate)
     if self.tile_picker.selected ~= 0 then
-        graphics.set_draw_color(table.unpack(self.tile_picker.selected_color))
-        graphics.draw_rect(
+        setdrawcolor(table.unpack(self.tile_picker.selected_color))
+        drawrect(
             self.tile_picker.selected_src.x,
             self.tile_picker.selected_src.y,
             editstate.grid.cell_size,
@@ -160,7 +164,7 @@ local function try_paint(self, editstate)
         local x, y = editstate.camera:transform_point(0, 0)
 
         -- emulate selected tile on grid
-        graphics.drawx(
+        drawx(
             editstate.tilesheet,
             x + ((gridx - 1) * scellsz),
             y + ((gridy - 1) * scellsz),
