@@ -1,7 +1,9 @@
 local graphics = require("milk.graphics")
+local keyboard = require("milk.keyboard")
 local mouse = require("milk.mouse")
 local gui = require("utils.gui")
 local mousebuttons = mouse.buttons
+local keys = keyboard.keys
 
 --=================================================
 -- TILE MAP TOOL STATE
@@ -16,6 +18,7 @@ local mousebuttons = mouse.buttons
 --=================================================
 local tilemaptools = {
     panel = {w = 138, h = 345},
+    brushsize = 1,
     tile_picker = {
         grid = {},
         selected = 0,
@@ -45,10 +48,19 @@ function tilemaptools:open(editstate)
     end
 end
 
--- luacheck: push ignore
 function tilemaptools:handle_input(editstate)
+    local ms = editstate.mouse_state
+
+    if keyboard.is_key_down(keys.LCTRL) then
+        if ms.scroll > 0  and self.brushsize < 10 then
+            self.brushsize = self.brushsize + 1
+        elseif ms.scroll < 0 and self.brushsize > 1 then
+            self.brushsize = self.brushsize - 1
+        end
+    end
 end
 
+-- luacheck: push ignore
 function tilemaptools:tick(editstate)
 end
 -- luacheck: pop
@@ -123,7 +135,14 @@ local function try_paint(self, editstate)
 
     if mouse.is_button_down(mousebuttons.RIGHT) and tiles[gridy] and tiles[gridy][gridx] then
         -- erase and don't emulate selected tile on grid so we can see what we're erasing
-        tiles[gridy][gridx] = 0
+        for i = 1, self.brushsize do
+            local row = tiles[gridy + (i - 1)]
+            for j = 1, self.brushsize do
+                if row and row[gridx + (j - 1)] then
+                    row[gridx + (j - 1)] = 0
+                end
+            end
+        end
         return
     end
 
@@ -149,14 +168,21 @@ local function try_paint(self, editstate)
             tilesrc[2],
             cellsz,
             cellsz,
-            zoom,
-            zoom,
+            zoom * self.brushsize,
+            zoom * self.brushsize,
             0
         )
 
         if mouse.is_button_down(mousebuttons.LEFT) then
             -- paint
-            tiles[gridy][gridx] = selected
+            for i = 1, self.brushsize do
+                local row = tiles[gridy + (i - 1)]
+                for j = 1, self.brushsize do
+                    if row and row[gridx + (j - 1)] then
+                        row[gridx + (j - 1)] = selected
+                    end
+                end
+            end
         end
     end
 end

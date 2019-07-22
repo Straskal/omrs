@@ -63,10 +63,15 @@ local function handle_mouse(self, dt)
 
     -- zoom
     ms.scroll = mouse.get_scroll()
-    if ms.scroll > 0 then
-        self.camera:zoom_in(self.navigation.zoom_speed * dt)
-    elseif ms.scroll < 0 then
-        self.camera:zoom_out(self.navigation.zoom_speed * dt)
+
+    -- only zoom if control is not being pressed.
+    -- this allows for other controls to use control+ shortcuts without zooming.
+    if not keyboard.is_key_down(keys.LCTRL) then
+        if ms.scroll > 0 then
+            self.camera:zoom_in(self.navigation.zoom_speed * dt)
+        elseif ms.scroll < 0 then
+            self.camera:zoom_out(self.navigation.zoom_speed * dt)
+        end
     end
 
     -- pan
@@ -84,7 +89,7 @@ end
 --=================================================
 local function handle_keyboard(self, dt)
     -- SHIFT +
-    if keyboard.is_key_down(keys.LSHIFT) then
+    if keyboard.is_key_down(keys.LCTRL) then
         -- G: toggle grid
         if keyboard.is_key_released(keys.G) then
             self.grid.show = not self.grid.show
