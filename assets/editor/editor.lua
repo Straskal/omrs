@@ -8,6 +8,14 @@ local gui = require("utils.gui")
 local keys = keyboard.keys
 local mousebuttons = mouse.buttons
 
+--=================================================
+-- local functions
+--=================================================
+local unpack = table.unpack
+local format = string.format
+local iskeydown = keyboard.is_key_down
+local iskeypressed = keyboard.is_key_pressed
+local iskeyreleased = keyboard.is_key_released
 local setdrawcolor = graphics.set_draw_color
 local drawx = graphics.drawx
 local drawrect = graphics.draw_rect
@@ -71,7 +79,7 @@ local function handle_mouse(self, dt)
 
     -- only zoom if control is not being pressed.
     -- this allows for other controls to use control+ shortcuts without zooming.
-    if not keyboard.is_key_down(keys.LCTRL) then
+    if not iskeydown(keys.LCTRL) then
         if ms.scroll > 0 then
             self.camera:zoom_in(self.navigation.zoom_speed * dt)
         elseif ms.scroll < 0 then
@@ -94,17 +102,17 @@ end
 --=================================================
 local function handle_keyboard(self, dt)
     -- SHIFT +
-    if keyboard.is_key_down(keys.LCTRL) then
+    if iskeydown(keys.LCTRL) then
         -- G: toggle grid
-        if keyboard.is_key_released(keys.G) then
+        if iskeyreleased(keys.G) then
             self.grid.show = not self.grid.show
         end
         -- O: toggle map onion layers
-        if keyboard.is_key_released(keys.O) then
+        if iskeyreleased(keys.O) then
             self.map.onion = not self.map.onion
         end
         -- DOWN: add row to map
-        if keyboard.is_key_released(keys.DOWN) then
+        if iskeyreleased(keys.DOWN) then
             local tilemap = self.level.tilemap
             tilemap.height = tilemap.height + 1
 
@@ -117,7 +125,7 @@ local function handle_keyboard(self, dt)
             end
         end
         -- UP: remove row from map
-        if keyboard.is_key_released(keys.UP) then
+        if iskeyreleased(keys.UP) then
             local tilemap = self.level.tilemap
 
             for i = 1, #tilemap.layers do
@@ -126,7 +134,7 @@ local function handle_keyboard(self, dt)
             tilemap.height = tilemap.height - 1
         end
         -- RIGHT: add column to map
-        if keyboard.is_key_released(keys.RIGHT) then
+        if iskeyreleased(keys.RIGHT) then
             self.level.tilemap.width = self.level.tilemap.width + 1
             for i = 1, #self.level.tilemap.layers do
                 for j = 1, #self.level.tilemap.layers[i] do
@@ -135,7 +143,7 @@ local function handle_keyboard(self, dt)
             end
         end
         -- LEFT: remove column from map
-        if keyboard.is_key_released(keys.LEFT) then
+        if iskeyreleased(keys.LEFT) then
             for i = 1, #self.level.tilemap.layers do
                 for j = 1, #self.level.tilemap.layers[i] do
                     self.level.tilemap.layers[i][j][self.level.tilemap.width] = nil
@@ -146,7 +154,7 @@ local function handle_keyboard(self, dt)
     end
 
     -- toggle layer
-    if keyboard.is_key_pressed(keys.TAB) then
+    if iskeypressed(keys.TAB) then
         local nextlayer = self.map.selected_layer + 1
         if nextlayer > #self.level.tilemap.layers then
             nextlayer = 1
@@ -155,24 +163,24 @@ local function handle_keyboard(self, dt)
     end
 
     -- pan with WASD
-    if keyboard.is_key_down(keys.W) then
+    if iskeydown(keys.W) then
         self.camera:move(0, -self.navigation.kpan_speed * dt)
     end
-    if keyboard.is_key_down(keys.S) then
+    if iskeydown(keys.S) then
         self.camera:move(0, self.navigation.kpan_speed * dt)
     end
-    if keyboard.is_key_down(keys.A) then
+    if iskeydown(keys.A) then
         self.camera:move(-self.navigation.kpan_speed * dt, 0)
     end
-    if keyboard.is_key_down(keys.D) then
+    if iskeydown(keys.D) then
         self.camera:move(self.navigation.kpan_speed * dt, 0)
     end
 
     -- zoom with arrows
-    if keyboard.is_key_down(keys.E) then
+    if iskeydown(keys.E) then
         self.camera:zoom_in(self.navigation.kzoom_speed * dt)
     end
-    if keyboard.is_key_down(keys.Q) then
+    if iskeydown(keys.Q) then
         self.camera:zoom_out(self.navigation.kzoom_speed * dt)
     end
 end
@@ -226,7 +234,7 @@ local function draw_map(self)
     local numlayers = #self.level.tilemap.layers
 
     -- draw map shadow
-    setdrawcolor(table.unpack(self.map.shadow.color))
+    setdrawcolor(unpack(self.map.shadow.color))
     local shadowoffset = self.map.shadow.offset
     local shadowx, shadowy = self.camera:transform_point(shadowoffset, shadowoffset)
     drawfillrect(
@@ -283,7 +291,7 @@ local function draw_grid(self)
         local mapwidth = self.level.tilemap.width
         local mapheight = self.level.tilemap.height
 
-        setdrawcolor(table.unpack(self.grid.color))
+        setdrawcolor(unpack(self.grid.color))
         for _ = 1, mapheight do
             for _ = 1, mapwidth do
                 drawrect(advancex, advancey, scaledcellsz, scaledcellsz)
@@ -299,6 +307,8 @@ end
 -- DRAWING COMMON INFO
 --=================================================
 local function draw_common_info(self, game)
+    local cam = self.camera
+
     -- bottom pannel
     gui:panel(0, 345, 640, 15)
 
@@ -306,14 +316,14 @@ local function draw_common_info(self, game)
     gui:label(350, 5, self.level.name)
 
     -- draw fps
-    gui:label(590, 5, string.format("FPS: %.0f", game.fps))
+    gui:label(590, 5,format("FPS: %.0f", game.fps))
 
     -- draw cam pos, mouse pos, and zoom
-    local msx, msy = self.camera:screen2world(self.mouse_state.x, self.mouse_state.y)
-    gui:label(10, 350, string.format("+ %.0f, %.0f", msx, msy))
+    local msx, msy = cam:screen2world(self.mouse_state.x, self.mouse_state.y)
+    gui:label(10, 350, format("+ %.0f, %.0f", msx, msy))
 
-    local cmx, cmy = self.camera.position[1], self.camera.position[2]
-    gui:label(80, 350, string.format("[ ] %.0f, %.0f", cmx, cmy))
+    local cmx, cmy = cam.position[1], cam.position[2]
+    gui:label(80, 350, format("[ ] %.0f, %.0f", cmx, cmy))
 
     -- draw current layer num
     local selectedlayer = self.map.selected_layer
@@ -321,15 +331,15 @@ local function draw_common_info(self, game)
     if self.map.onion then
         setdrawcolor(1, 1, 0, 1)
     end
-    gui:label(160, 350, string.format("// %d/%d", selectedlayer, numlayers))
+    gui:label(160, 350, format("// %d/%d", selectedlayer, numlayers))
 
     setdrawcolor(1, 1, 1, 1)
-    gui:label(615, 350, string.format("%.0f%%", self.camera:get_zoom_percentage()))
+    gui:label(615, 350, format("%.0f%%", cam:get_zoom_percentage()))
 end
 
 function editor:on_draw(game, _)
     gui:begin_draw()
-    setdrawcolor(table.unpack(self.background_color))
+    setdrawcolor(unpack(self.background_color))
     graphics.clear()
     setdrawcolor(1, 1, 1, 1)
     self.camera:calc_matrix()

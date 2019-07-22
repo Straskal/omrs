@@ -5,6 +5,10 @@ local gui = require("utils.gui")
 local mousebuttons = mouse.buttons
 local keys = keyboard.keys
 
+--=================================================
+-- local functions
+--=================================================
+local floor = math.floor
 local setdrawcolor = graphics.set_draw_color
 local drawx = graphics.drawx
 local drawrect = graphics.draw_rect
@@ -104,8 +108,8 @@ local function try_pick_tile(self, editstate)
     local xoffset = self.tile_picker.offset.x
     local yoffset = self.tile_picker.offset.y
     local cellsz = editstate.grid.cell_size
-    local tilex = (math.floor((editstate.mouse_state.x - xoffset) / cellsz) + 1)
-    local tiley = (math.floor((editstate.mouse_state.y - yoffset) / cellsz) + 1)
+    local tilex = (floor((editstate.mouse_state.x - xoffset) / cellsz) + 1)
+    local tiley = (floor((editstate.mouse_state.y - yoffset) / cellsz) + 1)
 
     if grid[tiley] and grid[tiley][tilex] then
         self.tile_picker.selected = grid[tiley][tilex].id
@@ -133,8 +137,8 @@ end
 -- TODO: make command
 local function try_paint(self, editstate)
     local msx, msy = editstate.camera:screen2world(editstate.mouse_state.x, editstate.mouse_state.y)
-    local gridx = math.floor(msx / editstate.grid.cell_size) + 1
-    local gridy = math.floor(msy / editstate.grid.cell_size) + 1
+    local gridx = floor(msx / editstate.grid.cell_size) + 1
+    local gridy = floor(msy / editstate.grid.cell_size) + 1
     local tiles = editstate.level.tilemap.layers[editstate.map.selected_layer]
 
     if mouse.is_button_down(mousebuttons.RIGHT) and tiles[gridy] and tiles[gridy][gridx] then

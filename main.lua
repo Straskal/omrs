@@ -29,6 +29,8 @@ local TARGET_FPS = 60
 local SECONDS_PER_TICK = 1 / TARGET_FPS
 local frame_start_time = 0
 local accumulated_frame_time = 0
+local num_frames = 0
+local frame_count_start = time.get_total()
 
 -- run at fixed time step of SECONDS_PER_TICK
 while not window.should_close() do
@@ -53,6 +55,9 @@ while not window.should_close() do
 
         graphics.present()
         accumulated_frame_time = accumulated_frame_time - SECONDS_PER_TICK
+
+        game.fps = num_frames / (time.get_total() - frame_count_start)
+        num_frames = num_frames + 1
     end
 end
 
