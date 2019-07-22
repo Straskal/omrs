@@ -1,6 +1,7 @@
 local tiny = require("thirdparty.tiny")
 local graphics = require("milk.graphics")
 local updatesystem = require("systems.updatesystem")
+local animationsystem = require("systems.animationsystem")
 local rendersystem = require("systems.rendersystem")
 
 local gameplay = {}
@@ -9,6 +10,7 @@ function gameplay:on_enter()
 
     self.world = tiny.world()
     self.world:addSystem(updatesystem.new())
+    self.world:addSystem(animationsystem.new())
     self.world:addSystem(rendersystem.new())
 
     self.level = dofile("assets/core/test.lvl.lua")
@@ -26,7 +28,9 @@ function gameplay:on_tick(_, dt)
     self.world:update(dt)
 end
 
+-- luacheck: push ignore
 function gameplay:on_draw()
 end
+-- luacheck: pop
 
 return gameplay
