@@ -2,6 +2,7 @@ local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local gui = require("utils.gui")
+local gameplay = require("gameplay.gameplay")
 local editor = require("editor.editor")
 local keys = keyboard.keys
 
