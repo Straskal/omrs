@@ -76,15 +76,15 @@ return {
             position = {100, 100}
         },
         {
-            file = "assets/gameobjects/player.obj.lua",
+            file = "assets/gameobjects/other.obj.lua",
             position = {200, 200}
         },
         {
-            file = "assets/gameobjects/player.obj.lua",
+            file = "assets/gameobjects/other.obj.lua",
             position = {300, 300}
         },
         {
-            file = "assets/gameobjects/player.obj.lua",
+            file = "assets/gameobjects/other.obj.lua",
             position = {300, 200}
         }
     }
