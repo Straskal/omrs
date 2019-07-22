@@ -1,5 +1,5 @@
 return {
-    tilesheet = "assets/core/testtilesheet.png",
+    tilesheetfile = "assets/core/testtilesheet.png",
     tiledefinitions = {
         {
             -- grass

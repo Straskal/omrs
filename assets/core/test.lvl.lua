@@ -1,9 +1,10 @@
 return {
     name = "level-1",
     tilemap = {
+        cellsize = 32,
         width = 32,
         height = 19,
-        tileset = "assets/core/test.tiles.lua",
+        tilesetfile = "assets/core/test.tiles.lua",
         layers = {
             {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},

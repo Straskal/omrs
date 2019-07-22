@@ -193,8 +193,8 @@ function editor:on_enter()
 
     -- load level
     self.level = dofile("assets/core/test.lvl.lua")
-    self.tileset = dofile(self.level.tilemap.tileset)
-    self.tilesheet = graphics.new_image(self.tileset.tilesheet)
+    self.tileset = dofile(self.level.tilemap.tilesetfile)
+    self.tilesheet = graphics.new_image(self.tileset.tilesheetfile)
 
     self.level.tilemap.width = self.level.tilemap.width or self.map.default_width
     self.level.tilemap.height = self.level.tilemap.height or self.map.default_height
