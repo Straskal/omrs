@@ -3,7 +3,7 @@ local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local gui = require("utils.gui")
 local gameplay = require("gameplay.gameplay")
-local editor = require("editor.editor")
+--local editor = require("editor.editor")
 local keys = keyboard.keys
 
 local game = {
@@ -41,7 +41,7 @@ function game:start()
 
     gui:init()
 
-    self:push_state(editor)
+    self:push_state(gameplay.new("assets/core/test.lvl.lua"))
 end
 
 function game:tick(dt)

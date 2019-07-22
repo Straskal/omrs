@@ -5,24 +5,36 @@ local updatesystem = require("systems.updatesystem")
 local animationsystem = require("systems.animationsystem")
 local rendersystem = require("systems.rendersystem")
 
-local gameplay = {
-    camera = camera.new(),
-}
+local gameplay = {}
+
+local function new(levelfile)
+    local instance = {
+        camera = camera.new(),
+        levelfile = levelfile
+    }
+    setmetatable(instance, {__index = gameplay})
+    return instance
+end
 
 function gameplay:on_enter()
-    -- TODO: this all needs to be refactored in a way where we can dynamically load levels
-    self.level = dofile("assets/core/test.lvl.lua")
+    self.level = dofile(self.levelfile)
     self.level.tilemap.tileset = dofile(self.level.tilemap.tilesetfile)
     self.level.tilemap.tilesheet = graphics.new_image(self.level.tilemap.tileset.tilesheetfile)
 
-    self.world = tiny.world()
-    self.world:addSystem(updatesystem.new())
-    self.world:addSystem(animationsystem.new())
-    self.world:addSystem(rendersystem.new(self.camera, self.level.tilemap))
+    -- create world with systems
+    self.world =
+        tiny.world(updatesystem.new(), animationsystem.new(), rendersystem.new(self.camera, self.level.tilemap))
 
+    -- load all gameobjects
+    local loaded = {}
     for i = 1, #self.level.gameobjects do
-        local e = dofile(self.level.gameobjects[i].file)
+        local file = self.level.gameobjects[i].file
+        if not loaded[file] then
+            loaded[file] = loadfile(file)
+        end
+        local e = loaded[file](self.level.gameobjects[i].file)
         e.position = self.level.gameobjects[i].position
+
         self.world:addEntity(e)
     end
 end
@@ -39,4 +51,6 @@ function gameplay:on_draw()
 end
 -- luacheck: pop
 
-return gameplay
+return {
+    new = new
+}
