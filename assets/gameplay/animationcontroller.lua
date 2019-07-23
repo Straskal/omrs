@@ -7,7 +7,7 @@ local function new()
     animation.filter = tiny.requireAll("image", "animation")
     animation.time = 0
 
-    function animation:preProcess(dt)
+    function animation:preWrap(dt)
         self.time = self.time + dt
     end
 

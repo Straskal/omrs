@@ -50,10 +50,10 @@ local function new(camera, tilemap, tiledefs, tilesheet)
     local render =
         tiny.sortedSystem(
         {
-            clearcolor = {0, 0, 0, 1}
+            clearcolor = {0, 0, 0, 1},
+            filter = tiny.requireAll("image")
         }
     )
-    render.filter = tiny.requireAll("image")
 
     -- luacheck: push ignore self
     function render:compare(e1, e2)

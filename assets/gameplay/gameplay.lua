@@ -62,6 +62,7 @@ function gameplay:on_tick(game, dt)
     graphics.clear()
     graphics.set_draw_color(1, 1, 1, 1)
     self.world:update(dt)
+    graphics.present()
 end
 
 return {
