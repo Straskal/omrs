@@ -39,6 +39,4 @@ local function new()
     return animation
 end
 
-return {
-    new = new
-}
+return new

@@ -13,6 +13,4 @@ local function new()
     return update
 end
 
-return {
-    new = new
-}
+return new

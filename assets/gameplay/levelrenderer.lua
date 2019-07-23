@@ -4,37 +4,55 @@ local graphics = require("milk.graphics")
 local drawx = graphics.drawx
 local unpack = table.unpack
 
-local function draw_tilemap(camera, tilemap)
+local function draw_tilemap(camera, tilemap, tiledefs, tilesheet)
     local x, y = camera:transform_point(0, 0)
     local advancex, advancey = x, y
-    local tilesheet = tilemap.tilesheet
-    local tiledefs = tilemap.tileset.tiledefinitions
     local mapwidth = tilemap.width
     local mapheight = tilemap.height
     local cellsz = tilemap.cellsize
+    local scaledcellsz = cellsz * camera.zoom
     local numlayers = #tilemap.layers
 
     for i = 1, numlayers do
-        local layer = tilemap.layers[i]
+        local tiles = tilemap.layers[i].tiles
+
+        graphics.set_draw_color(unpack(tilemap.layers[i].color))
+
         for j = 1, mapheight do
             for k = 1, mapwidth do
-                local tileid = layer[j][k]
+                local tiledef = tiles[j][k]
                 -- if there is no tile here, skip drawing
-                if tileid > 0 then
-                    local tilesrc = tiledefs[tileid].src
-                    drawx(tilesheet, advancex, advancey, tilesrc[1], tilesrc[2], cellsz, cellsz, 1, 1, 0)
+                if tiledef > 0 then
+                    local tilesrc = tiledefs[tiledef].src
+                    drawx(
+                        tilesheet,
+                        advancex,
+                        advancey,
+                        tilesrc[1],
+                        tilesrc[2],
+                        cellsz,
+                        cellsz,
+                        camera.zoom,
+                        camera.zoom,
+                        0
+                    )
                 end
-                advancex = advancex + cellsz
+                advancex = advancex + scaledcellsz
             end
             advancex = x
-            advancey = advancey + cellsz
+            advancey = advancey + scaledcellsz
         end
         advancex, advancey = x, y
     end
 end
 
-local function new(camera, tilemap)
-    local render = tiny.sortedProcessingSystem()
+local function new(camera, tilemap, tiledefs, tilesheet)
+    local render =
+        tiny.sortedProcessingSystem(
+        {
+            clearcolor = {0, 0, 0, 1}
+        }
+    )
     render.filter = tiny.requireAll("image")
 
     -- luacheck: push ignore self
@@ -51,11 +69,12 @@ local function new(camera, tilemap)
     end
 
     function render:preProcess(_)
-        graphics.set_draw_color(0, 0, 0, 1)
+        graphics.set_draw_color(unpack(self.clearcolor))
         graphics.clear()
         graphics.set_draw_color(1, 1, 1, 1)
+        camera:calc_matrix()
 
-        draw_tilemap(camera, tilemap)
+        draw_tilemap(camera, tilemap, tiledefs, tilesheet)
     end
 
     function render:process(e, _)
@@ -68,6 +87,4 @@ local function new(camera, tilemap)
     return render
 end
 
-return {
-    new = new
-}
+return new
