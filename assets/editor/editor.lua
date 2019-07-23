@@ -98,6 +98,7 @@ function editor:on_tick(game, dt)
     graphics.clear()
     graphics.set_draw_color(1, 1, 1, 1)
     self.systems:update(dt)
+    graphics.present()
 
     if iskeypressed(keys.TILDE) then
         game:load_level("assets/core/test.lvl.lua")

@@ -1,7 +1,6 @@
 local milk = require("milk")
 local window = require("milk.window")
 local time = require("milk.time")
-local graphics = require("milk.graphics")
 
 -- set extra search path for assets
 package.path = package.path .. ";assets/?.lua"
@@ -53,7 +52,6 @@ while not window.should_close() do
         -- draw logic
         draw(game, SECONDS_PER_TICK)
 
-        graphics.present()
         accumulated_frame_time = accumulated_frame_time - SECONDS_PER_TICK
 
         game.fps = num_frames / (time.get_total() - frame_count_start)
