@@ -5,11 +5,11 @@ local time = require("milk.time")
 -- set extra search path for assets
 package.path = package.path .. ";assets/?.lua"
 
-local game = require("core.game")
+local game = require("game")
 
 local start = game.start or function()
     end
-local tick = game.tick or function()
+local update = game.update or function()
     end
 local draw = game.draw or function()
     end
@@ -25,34 +25,34 @@ start(game)
 window.show()
 
 local TARGET_FPS = 60
-local SECONDS_PER_TICK = 1 / TARGET_FPS
+local SEC_PER_UPDATE = 1 / TARGET_FPS
 local frame_start_time = 0
 local accumulated_frame_time = 0
 local num_frames = 0
 local frame_count_start = time.get_total()
 
--- run at fixed time step of SECONDS_PER_TICK
+-- run at fixed time step of SEC_PER_UPDATE
 while not window.should_close() do
     local t = time.get_total()
     local frame_time = t - frame_start_time
     frame_start_time = t
     accumulated_frame_time = accumulated_frame_time + frame_time
 
-    -- we most likely hit a breakpoint if a complete frame takes a whole second.
+    -- it a complete frame takes over a second, it's like that we've hit a breakpoint.
     if accumulated_frame_time > 1 then
         accumulated_frame_time = 1
     end
 
-    while accumulated_frame_time >= SECONDS_PER_TICK do
+    while accumulated_frame_time >= SEC_PER_UPDATE do
         window.poll()
 
         -- game logic
-        tick(game, SECONDS_PER_TICK)
+        update(game, SEC_PER_UPDATE)
 
         -- draw logic
-        draw(game, SECONDS_PER_TICK)
+        draw(game, SEC_PER_UPDATE)
 
-        accumulated_frame_time = accumulated_frame_time - SECONDS_PER_TICK
+        accumulated_frame_time = accumulated_frame_time - SEC_PER_UPDATE
 
         game.fps = num_frames / (time.get_total() - frame_count_start)
         num_frames = num_frames + 1
