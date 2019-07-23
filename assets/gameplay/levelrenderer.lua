@@ -48,7 +48,7 @@ end
 
 local function new(camera, tilemap, tiledefs, tilesheet)
     local render =
-        tiny.sortedProcessingSystem(
+        tiny.sortedSystem(
         {
             clearcolor = {0, 0, 0, 1}
         }
@@ -68,19 +68,15 @@ local function new(camera, tilemap, tiledefs, tilesheet)
         end
     end
 
-    function render:preProcess(_)
-        graphics.set_draw_color(unpack(self.clearcolor))
-        graphics.clear()
-        graphics.set_draw_color(1, 1, 1, 1)
+    function render:update(_)
         camera:calc_matrix()
-
         draw_tilemap(camera, tilemap, tiledefs, tilesheet)
-    end
 
-    function render:process(e, _)
-        local px, py = camera:transform_point(unpack(e.position))
-        local s = e.image.src
-        graphics.drawx(e.image.data, px, py, s[1], s[2], s[3], s[4], 1, 1, 0)
+        for _, go in pairs(self.entities) do
+            local px, py = camera:transform_point(unpack(go.position))
+            local s = go.image.src
+            graphics.drawx(go.image.data, px, py, s[1], s[2], s[3], s[4], 1, 1, 0)
+        end
     end
     -- luacheck: pop
 

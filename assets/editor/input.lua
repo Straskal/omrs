@@ -59,10 +59,10 @@ local function new(editor)
                 tilemap.height = tilemap.height + 1
 
                 for i = 1, #tilemap.layers do
-                    tilemap.layers[i][tilemap.height] = {}
+                    tilemap.layers[i].tiles[tilemap.height] = {}
 
                     for j = 1, tilemap.width do
-                        tilemap.layers[i][tilemap.height][j] = 0
+                        tilemap.layers[i].tiles[tilemap.height][j] = 0
                     end
                 end
             end
@@ -71,7 +71,7 @@ local function new(editor)
                 local tilemap = editor.level.tilemap
 
                 for i = 1, #tilemap.layers do
-                    tilemap.layers[i][tilemap.height] = nil
+                    tilemap.layers[i].tiles[tilemap.height] = nil
                 end
                 tilemap.height = tilemap.height - 1
             end
@@ -79,16 +79,16 @@ local function new(editor)
             if keyboard.is_key_released(keys.RIGHT) then
                 editor.level.tilemap.width = editor.level.tilemap.width + 1
                 for i = 1, #editor.level.tilemap.layers do
-                    for j = 1, #editor.level.tilemap.layers[i] do
-                        editor.level.tilemap.layers[i][j][editor.level.tilemap.width] = 0
+                    for j = 1, #editor.level.tilemap.layers[i].tiles do
+                        editor.level.tilemap.layers[i].tiles[j][editor.level.tilemap.width] = 0
                     end
                 end
             end
             -- LEFT: remove column from map
             if keyboard.is_key_released(keys.LEFT) then
                 for i = 1, #editor.level.tilemap.layers do
-                    for j = 1, #editor.level.tilemap.layers[i] do
-                        editor.level.tilemap.layers[i][j][editor.level.tilemap.width] = nil
+                    for j = 1, #editor.level.tilemap.layers[i].tiles do
+                        editor.level.tilemap.layers[i].tiles[j][editor.level.tilemap.width] = nil
                     end
                 end
                 editor.level.tilemap.width = editor.level.tilemap.width - 1

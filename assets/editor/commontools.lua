@@ -18,10 +18,6 @@ return function(editor, game)
     )
 
     -- luacheck: push ignore self
-    function tools:preWrap(_)
-        gui:begin_draw()
-    end
-
     function tools:postWrap(_)
         gui:end_draw()
     end

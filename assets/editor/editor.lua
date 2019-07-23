@@ -5,7 +5,8 @@ local camera = require("editor.camera")
 local tiny = require("thirdparty.tiny")
 local input = require("editor.input")
 local onionskinning = require("editor.onionskinning")
-local rendersystem = require("gameplay.levelrenderer")
+local tilemapshadow = require("editor.tilemapshadow")
+local levelrenderer = require("gameplay.levelrenderer")
 local commontools = require("editor.commontools")
 local tilemaptools = require("editor.tilemaptools")
 local keys = keyboard.keys
@@ -13,6 +14,7 @@ local keys = keyboard.keys
 --=================================================
 -- local functions
 --=================================================
+local unpack = table.unpack
 local iskeypressed = keyboard.is_key_pressed
 
 --=================================================
@@ -30,7 +32,7 @@ local editor = {
     grid = {
         show = true,
         cell_size = 32,
-        color = {0, 0, 0, 0.05}
+        color = {0, 0, 0, 0.09}
     },
     map = {
         default_width = 100,
@@ -77,15 +79,24 @@ function editor:on_enter(game)
     local h = self.level.tilemap.height * self.grid.cell_size
     self.camera.position[1], self.camera.position[2] = w * 0.5, h * 0.5
 
-    local rs = rendersystem(self.camera, self.level.tilemap, self.tileset.tiledefinitions, self.tilesheet)
-    rs.clearcolor = self.background_color
-    self.systems = tiny.world(input(self), onionskinning(self), rs, commontools(self, game), tilemaptools(self))
+    self.systems =
+        tiny.world(
+        input(self),
+        onionskinning(self),
+        tilemapshadow(self),
+        levelrenderer(self.camera, self.level.tilemap, self.tileset.tiledefinitions, self.tilesheet),
+        commontools(self, game),
+        tilemaptools(self)
+    )
 end
 
 --=================================================
 -- TICKING
 --=================================================
 function editor:on_tick(game, dt)
+    graphics.set_draw_color(unpack(self.background_color))
+    graphics.clear()
+    graphics.set_draw_color(1, 1, 1, 1)
     self.systems:update(dt)
 
     if iskeypressed(keys.TILDE) then
