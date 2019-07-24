@@ -12,7 +12,8 @@ local function new(levelfile)
         file = levelfile,
         data = {},
         tilesets = {},
-        tilesheets = {}
+        tilesheets = {},
+        gameobjects = {}
     }
     setmetatable(instance, {__index = levelstate})
     return instance
@@ -20,8 +21,8 @@ end
 
 function levelstate:enter(_)
     -- load level and resources
-    local data = dofile(self.file)
-    local layers = data.tilemap.layers
+    self.data = dofile(self.file)
+    local layers = self.data.tilemap.layers
 
     for i = 1, #layers do
         local tileset = dofile(layers[i].tilesetfile)
@@ -29,7 +30,16 @@ function levelstate:enter(_)
         self.tilesheets[i] = graphics.new_image(tileset.imagefile)
     end
 
-    self.data = data
+    local loaded = {}
+    for i = 1, #self.data.gameobjects do
+        local file = self.data.gameobjects[i].file
+        local pos = self.data.gameobjects[i].position
+        if not loaded[file] then
+            loaded[file] = loadfile(file)
+        end
+        self.gameobjects[i] = loaded[file]()
+        self.gameobjects[i].position = pos
+    end
 end
 
 local function draw_tilemap(self)
@@ -71,10 +81,17 @@ end
 
 -- luacheck: push ignore
 function levelstate:update(game, dt)
+    for _, go in pairs(self.gameobjects) do
+        local _ = go.update and go:update(dt)
+    end
 end
 
 function levelstate:draw(game, dt)
     draw_tilemap(self)
+    
+    for _, go in pairs(self.gameobjects) do
+        local _ = go.draw and go:draw(self.camera, dt)
+    end
 end
 
 function levelstate:exit(game)

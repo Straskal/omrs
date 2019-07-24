@@ -10,7 +10,7 @@ local game = {
     statestack = {},
     framestart = 0,
     fps = 0,
-    bgcolor = {1, 1, 1, 1}
+    bgcolor = {0, 0, 0, 1}
 }
 
 function game:push_state(state)
@@ -64,6 +64,7 @@ end
 
 function game:draw(dt)
     graphics.set_draw_color(unpack(self.bgcolor))
+    graphics.clear()
     -- attempt to draw all states from bottom to top
     local len = #self.statestack
     for i = 1, len do
