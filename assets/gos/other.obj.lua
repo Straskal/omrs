@@ -23,11 +23,11 @@ return {
         accumulated_time = 0,
         time = 0
     }),
-    update = function(self, dt)
+    update = function(self, _, _, dt)
         self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
     end,
-    draw = function(self, camera, _)
-        local x, y = camera:transform_point(unpack(self.position))
+    draw = function(self, _, level, _)
+        local x, y = level.camera:transform_point(unpack(self.position))
         graphics.set_draw_color(1, 1, 1, 1)
         drawx(self.image, x, y, self.src[1], self.src[2], self.src[3], self.src[4], 1, 1, 0)
     end

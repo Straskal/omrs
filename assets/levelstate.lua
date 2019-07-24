@@ -15,7 +15,8 @@ local function new(levelfile)
         tilesheets = {},
         gameobjects = {},
         loadedgofiles = {},
-        tospawn = {}
+        tospawn = {},
+        leveltoload = nil
     }
     setmetatable(instance, {__index = levelstate})
     return instance
@@ -85,7 +86,6 @@ function levelstate:spawn(file, props)
         self.loadedgofiles[file] = loadfile(file)
     end
     local go = self.loadedgofiles[file]()
-    go.level = self
     for k, v in pairs(props) do
         go[k] = v
     end
@@ -109,7 +109,7 @@ function levelstate:update(game, dt)
     end
 
     for _, go in pairs(self.gameobjects) do
-        local _ = go.update and go:update(dt)
+        local _ = go.update and go:update(game, self, dt)
     end
 end
 
@@ -117,7 +117,7 @@ function levelstate:draw(game, dt)
     draw_tilemap(self)
 
     for _, go in pairs(self.gameobjects) do
-        local _ = go.draw and go:draw(self.camera, dt)
+        local _ = go.draw and go:draw(game, self, dt)
     end
 end
 

@@ -22,10 +22,10 @@ end
 
 function game:pop_state()
     local len = #self.statestack
-    if len > 0 and self.statestack[len].on_exit then
+    if len > 0 and self.statestack[len].exit then
         self.statestack[#self.statestack]:exit(self)
-        table.remove(self.statestack)
     end
+    table.remove(self.statestack)
 end
 
 function game:switch_state(state)

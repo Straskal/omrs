@@ -1,6 +1,7 @@
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local animator = require("animator")
+local levelstate = require("levelstate")
 local keys = keyboard.keys
 
 local unpack = table.unpack
@@ -25,9 +26,9 @@ return {
         accumulated_time = 0,
         time = 0
     }),
-    update = function(self, dt)
+    update = function(self, game, _, dt)
         if keyboard.is_key_pressed(keys.SPACE) then
-            self.level:spawn("assets/gos/other.obj.lua")
+            game:switch_state(levelstate("assets/levels/test.lvl.lua"))
         end
         if keyboard.is_key_down(keys.W) then
             self.position[2] = self.position[2] - self.speed * dt
@@ -43,8 +44,8 @@ return {
         end
         self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
     end,
-    draw = function(self, camera, _)
-        local x, y = camera:transform_point(unpack(self.position))
+    draw = function(self, _, level, _)
+        local x, y = level.camera:transform_point(unpack(self.position))
         graphics.set_draw_color(1, 1, 1, 1)
         drawx(self.image, x, y, self.src[1], self.src[2], self.src[3], self.src[4], 1, 1, 0)
     end
