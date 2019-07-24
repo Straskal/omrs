@@ -9,7 +9,6 @@ local drawx = graphics.drawx
 return {
     image = graphics.new_image("assets/gos/omrs.png"),
     src = {0, 0, 32, 32},
-    layer = 1,
     speed = 100,
     animationclips = {
         idle = {1, 2, 3, 4, 5, 6}

@@ -85,7 +85,14 @@ return {
     gameobjects = {
         {
             file = "assets/gos/player.obj.lua",
-            position = {100, 100}
+            position = {100, 100},
+            layer = 1
+        },
+        {
+            file = "assets/gos/player.obj.lua",
+            position = {200, 100},
+            layer = 1,
+            speed = 50
         },
         {
             file = "assets/gos/other.obj.lua",

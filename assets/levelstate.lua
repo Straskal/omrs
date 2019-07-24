@@ -33,13 +33,21 @@ function levelstate:enter(_)
     local loaded = {}
     for i = 1, #self.data.gameobjects do
         local file = self.data.gameobjects[i].file
-        local pos = self.data.gameobjects[i].position
         if not loaded[file] then
             loaded[file] = loadfile(file)
         end
         self.gameobjects[i] = loaded[file]()
-        self.gameobjects[i].position = pos
+        for k, v in pairs(self.data.gameobjects[i])  do
+            self.gameobjects[i][k] = v
+        end
     end
+
+    table.sort(
+        self.gameobjects,
+        function(go1, go2)
+            return (go1.layer or 0) < (go2.layer or 0)
+        end
+    )
 end
 
 local function draw_tilemap(self)
@@ -88,7 +96,7 @@ end
 
 function levelstate:draw(game, dt)
     draw_tilemap(self)
-    
+
     for _, go in pairs(self.gameobjects) do
         local _ = go.draw and go:draw(self.camera, dt)
     end
