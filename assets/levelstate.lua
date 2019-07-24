@@ -13,7 +13,9 @@ local function new(levelfile)
         data = {},
         tilesets = {},
         tilesheets = {},
-        gameobjects = {}
+        gameobjects = {},
+        loadedgofiles = {},
+        tospawn = {}
     }
     setmetatable(instance, {__index = levelstate})
     return instance
@@ -30,24 +32,10 @@ function levelstate:enter(_)
         self.tilesheets[i] = graphics.new_image(tileset.imagefile)
     end
 
-    local loaded = {}
     for i = 1, #self.data.gameobjects do
         local file = self.data.gameobjects[i].file
-        if not loaded[file] then
-            loaded[file] = loadfile(file)
-        end
-        self.gameobjects[i] = loaded[file]()
-        for k, v in pairs(self.data.gameobjects[i])  do
-            self.gameobjects[i][k] = v
-        end
+        self:spawn(file, self.data.gameobjects[i])
     end
-
-    table.sort(
-        self.gameobjects,
-        function(go1, go2)
-            return (go1.layer or 0) < (go2.layer or 0)
-        end
-    )
 end
 
 local function draw_tilemap(self)
@@ -87,8 +75,39 @@ local function draw_tilemap(self)
     end
 end
 
+function levelstate:spawn(file, props)
+    props =
+        props or
+        {
+            position = {0, 0}
+        }
+    if not self.loadedgofiles[file] then
+        self.loadedgofiles[file] = loadfile(file)
+    end
+    local go = self.loadedgofiles[file]()
+    go.level = self
+    for k, v in pairs(props) do
+        go[k] = v
+    end
+    table.insert(self.tospawn, go)
+end
+
 -- luacheck: push ignore
 function levelstate:update(game, dt)
+    if #self.tospawn > 0 then
+        while #self.tospawn > 0 do
+            local go = self.tospawn[#self.tospawn]
+            table.insert(self.gameobjects, go)
+            table.remove(self.tospawn)
+        end
+        table.sort(
+        self.gameobjects,
+        function(go1, go2)
+            return (go1.layer or 0) < (go2.layer or 0)
+        end
+    )
+    end
+
     for _, go in pairs(self.gameobjects) do
         local _ = go.update and go:update(dt)
     end

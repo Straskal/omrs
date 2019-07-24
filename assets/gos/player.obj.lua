@@ -26,6 +26,9 @@ return {
         time = 0
     }),
     update = function(self, dt)
+        if keyboard.is_key_pressed(keys.SPACE) then
+            self.level:spawn("assets/gos/other.obj.lua")
+        end
         if keyboard.is_key_down(keys.W) then
             self.position[2] = self.position[2] - self.speed * dt
         end
