@@ -131,6 +131,9 @@ function levelstate:update(game, dt)
             go._idx = idx
             self.gameobjects[idx] = go
         end
+        for i = 1, #self.tospawn do
+            local _ = self.tospawn[i].spawned and self.tospawn[i]:spawned(game, self)
+        end
         self.tospawn = {}
         if #self.gameobjects > 1 then
             sort(self.gameobjects, gosort)
@@ -142,6 +145,9 @@ function levelstate:update(game, dt)
         for i = 1, #self.todestroy do
             local go = self.todestroy[i]
             self.gameobjects[go._idx] = nil
+        end
+        for i = 1, #self.todestroy do
+            local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(game, self)
         end
         self.todestroy = {}
         if #self.gameobjects > 1 then

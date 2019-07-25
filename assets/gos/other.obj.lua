@@ -1,4 +1,5 @@
 local graphics = require("milk.graphics")
+local audio = require("milk.audio")
 local animator = require("animator")
 
 local unpack = table.unpack
@@ -7,6 +8,7 @@ local drawx = graphics.drawx
 return {
     image = graphics.new_image("assets/gos/omrs.png"),
     src = {0, 0, 32, 32},
+    boop = audio.new_sound("assets/gos/beep.wav"),
     speed = 100,
     animationclips = {
         idle = {1, 2, 3, 4, 5, 6}
@@ -23,6 +25,9 @@ return {
         accumulated_time = 0,
         time = 0
     }),
+    spawned = function(self, _, _)
+        self.boop:play()
+    end,
     update = function(self, _, _, dt)
         self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
     end,
@@ -30,5 +35,8 @@ return {
         local x, y = level.camera:transform_point(unpack(self.position))
         graphics.set_draw_color(1, 1, 1, 1)
         drawx(self.image, x, y, self.src[1], self.src[2], self.src[3], self.src[4], 1, 1, 0)
-    end
+    end,
+    destroyed = function(self, _, _)
+        self.boop:play()
+    end,
 }
