@@ -87,24 +87,6 @@ return {
             file = "assets/gos/player.obj.lua",
             position = {100, 100},
             layer = 1
-        },
-        {
-            file = "assets/gos/player.obj.lua",
-            position = {200, 100},
-            layer = 1,
-            speed = 50
-        },
-        {
-            file = "assets/gos/other.obj.lua",
-            position = {200, 200}
-        },
-        {
-            file = "assets/gos/other.obj.lua",
-            position = {300, 300}
-        },
-        {
-            file = "assets/gos/other.obj.lua",
-            position = {300, 200}
         }
     }
 }

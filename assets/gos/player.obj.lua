@@ -26,9 +26,20 @@ return {
         accumulated_time = 0,
         time = 0
     }),
-    update = function(self, game, _, dt)
+    update = function(self, game, level, dt)
         if keyboard.is_key_pressed(keys.SPACE) then
             game:switch_state(levelstate("assets/levels/test.lvl.lua"))
+        end
+        if keyboard.is_key_pressed(keys.P) then
+            if self.spawnedgo then
+                level:destroy(self.spawnedgo)
+                self.spawnedgo = nil
+            else
+                self.spawnedgo = level:spawn("assets/gos/other.obj.lua", {
+                    position = {50, 300},
+                    speed = 2
+                })
+            end
         end
         if keyboard.is_key_down(keys.W) then
             self.position[2] = self.position[2] - self.speed * dt

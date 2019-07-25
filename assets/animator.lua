@@ -1,7 +1,7 @@
 local animator = {}
 
 local function new(config)
-    local self = {
+    return setmetatable({
         frame_width = config.frame_width,
         frame_height = config.frame_height,
         rows = config.rows,
@@ -12,9 +12,7 @@ local function new(config)
         current_anim_frame = 1,
         accumulated_time = 0,
         time = 0
-    }
-    setmetatable(self, { __index = animator })
-    return self
+    }, { __index = animator })
 end
 
 function animator:set_animation(animation)
