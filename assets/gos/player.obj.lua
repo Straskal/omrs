@@ -36,7 +36,7 @@ return {
                 self.spawnedgo = nil
             else
                 self.spawnedgo = level:spawn("assets/gos/other.obj.lua", {
-                    position = {50, 300},
+                    position = {self.position[1] + 50, self.position[2] + 50},
                     speed = 2
                 })
             end

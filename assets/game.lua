@@ -2,9 +2,11 @@ local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local levelstate = require("levelstate")
+local gui = require("gui")
 local keys = keyboard.keys
 
 local unpack = table.unpack
+local format = string.format
 
 local game = {
     statestack = {},
@@ -38,7 +40,9 @@ end
 function game:start()
     window.set_title("Old Man Rage Strength")
     window.set_size(1280, 720)
-    graphics.set_resolution(640, 360)
+    graphics.set_resolution(480, 272)
+
+    gui:init()
 
     self:push_state(levelstate("assets/levels/test.lvl.lua"))
 end
@@ -65,6 +69,7 @@ end
 function game:draw(dt)
     graphics.set_draw_color(unpack(self.bgcolor))
     graphics.clear()
+    gui:begin_draw()
     -- attempt to draw all states from bottom to top
     local len = #self.statestack
     for i = 1, len do
@@ -73,6 +78,9 @@ function game:draw(dt)
             self.statestack[i]:draw(self, dt)
         end
     end
+    -- draw fps
+    gui:label(430, 5, format("FPS: %.0f", game.fps))
+    gui:end_draw()
     graphics.present()
 end
 
