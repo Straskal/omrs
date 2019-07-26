@@ -142,15 +142,15 @@ function levelstate:update(game, dt)
         for i = 1, #self.todestroy do
             local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(game, self)
         end
-        while #self.todestroy > 0 do
-            local go = self.todestroy[#self.todestroy]
-            for i = 1, #self.gameobjects do
-                if self.gameobjects[i] == go then
-                    remove(self.gameobjects, i)
+        for i = 1, #self.todestroy do
+            local go = self.todestroy[i]
+            for j = 1, #self.gameobjects do
+                if self.gameobjects[j] == go then
+                    remove(self.gameobjects, j)
                 end
             end
-            remove(self.todestroy)
         end
+        self.todestroy = {}
         sort(self.gameobjects, gosort)
     end
 
