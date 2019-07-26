@@ -128,7 +128,7 @@ function levelstate:enter(_)
 end
 
 -- luacheck: push ignore
-function levelstate:update(_, dt)
+function levelstate:update(game, dt)
     -- insert all spawned gos into active gos
     if #self.tospawn > 0 then
         for i = 1, #self.tospawn do
