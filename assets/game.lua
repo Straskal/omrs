@@ -35,6 +35,15 @@ function game:switch_state(state)
         self:pop_state()
     end
     self:push_state(state)
+
+    --[[
+        pop all states and push new one.
+        we then call collectgarbage to clean up any resources not used by new state.
+
+        collect garbage must be called twice due to table resurrection and __gc finalizers.
+    --]]
+    collectgarbage()
+    collectgarbage()
 end
 
 function game:start()
@@ -69,6 +78,7 @@ end
 function game:draw(dt)
     graphics.set_draw_color(unpack(self.bgcolor))
     graphics.clear()
+
     gui:begin_draw()
     -- attempt to draw all states from bottom to top
     local len = #self.statestack
@@ -81,6 +91,7 @@ function game:draw(dt)
     -- draw fps
     gui:label(430, 5, format("FPS: %.0f", game.fps))
     gui:end_draw()
+
     graphics.present()
 end
 

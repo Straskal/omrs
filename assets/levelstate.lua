@@ -37,25 +37,6 @@ local function new(levelfile)
     )
 end
 
-function levelstate:enter(_)
-    -- load and run the level file
-    self.data = dofile(self.file)
-    local layers = self.data.tilemap.layers
-
-    -- load the level's resources
-    for i = 1, #layers do
-        local tileset = dofile(layers[i].tilesetfile)
-        self.tilesets[i] = tileset
-        self.tilesheets[i] = graphics.new_image(tileset.imagefile)
-    end
-
-    -- spawn objects
-    for i = 1, #self.data.gameobjects do
-        local file = self.data.gameobjects[i].file
-        self:spawn(file, self.data.gameobjects[i])
-    end
-end
-
 local function draw_tilemap(self)
     local cam = self.camera
     local tilemap = self.data.tilemap
@@ -93,6 +74,14 @@ local function draw_tilemap(self)
     end
 end
 
+function levelstate:preload(file)
+    -- load the go file and preload all assets if not already loaded
+    if not self.loadedgofiles[file] then
+        self.loadedgofiles[file] = dofile(file)
+        self.loadedgofiles[file].preload(self)
+    end
+end
+
 function levelstate:spawn(file, props)
     props =
         props or
@@ -100,13 +89,10 @@ function levelstate:spawn(file, props)
             position = {0, 0}
         }
 
-    -- load the go file if not already loaded
-    if not self.loadedgofiles[file] then
-        self.loadedgofiles[file] = loadfile(file)
-    end
+    self:preload(file)
 
     -- run the file and set properties on go
-    local go = self.loadedgofiles[file]()
+    local go = self.loadedgofiles[file].new()
     for k, v in pairs(props) do
         go[k] = v
     end
@@ -122,8 +108,27 @@ function levelstate:destroy(go)
     end
 end
 
+function levelstate:enter(_)
+    -- load and run the level file
+    self.data = dofile(self.file)
+    local layers = self.data.tilemap.layers
+
+    -- load the level's resources
+    for i = 1, #layers do
+        local tileset = dofile(layers[i].tilesetfile)
+        self.tilesets[i] = tileset
+        self.tilesheets[i] = graphics.new_image(tileset.imagefile)
+    end
+
+    -- spawn objects
+    for i = 1, #self.data.gameobjects do
+        local file = self.data.gameobjects[i].file
+        self:spawn(file, self.data.gameobjects[i])
+    end
+end
+
 -- luacheck: push ignore
-function levelstate:update(game, dt)
+function levelstate:update(_, dt)
     -- insert all spawned gos into active gos
     if #self.tospawn > 0 then
         for i = 1, #self.tospawn do
@@ -167,7 +172,7 @@ function levelstate:draw(game, dt)
     end
 end
 
-function levelstate:exit(game)
+function levelstate:exit()
 end
 -- luacheck: pop
 
