@@ -1,21 +1,18 @@
 local graphics = require("milk.graphics")
-local audio = require("milk.audio")
 local animator = require("animator")
 
 local unpack = table.unpack
 local drawx = graphics.drawx
 
-local image = nil
-local beep = nil
-
-local function preload(_)
-    beep = audio.new_sound("assets/gos/beep.wav")
-    image = graphics.new_image("assets/gos/omrs.png")
+local function preload(level)
+    level.assets:load_sound("assets/gos/beep.wav")
+    level.assets:load_image("assets/gos/omrs.png")
 end
 
-local function new()
+local function new(level)
     return {
-        image = image,
+        image = level.assets:get("assets/gos/omrs.png"),
+        beep = level.assets:get("assets/gos/beep.wav"),
         src = {0, 0, 32, 32},
         boop = nil,
         speed = 100,
@@ -34,13 +31,13 @@ local function new()
             accumulated_time = 0,
             time = 0
         }),
-        spawned = function(_, _, _)
-            beep:play()
+        spawned = function(self, _, _)
+            self.beep:play()
         end,
         update = function(self, _, _, dt)
             self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
         end,
-        draw = function(self, _, level, _)
+        draw = function(self, _, _, _)
             local x, y = level.camera:transform_point(unpack(self.position))
             graphics.set_draw_color(1, 1, 1, 1)
             drawx(self.image, x, y, self.src[1], self.src[2], self.src[3], self.src[4], 1, 1, 0)

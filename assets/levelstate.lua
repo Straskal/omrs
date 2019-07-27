@@ -1,5 +1,6 @@
 local graphics = require("milk.graphics")
 local camera = require("camera")
+local assets = require("assets")
 
 local insert = table.insert
 local remove = table.remove
@@ -22,6 +23,7 @@ local function new(levelfile)
     return setmetatable(
         {
             camera = camera(),
+            assets = assets.new(),
             file = levelfile,
             data = {},
             tilesets = {},
@@ -92,7 +94,7 @@ function levelstate:spawn(file, props)
     self:preload(file)
 
     -- run the file and set properties on go
-    local go = self.loadedgofiles[file].new()
+    local go = self.loadedgofiles[file].new(self)
     for k, v in pairs(props) do
         go[k] = v
     end

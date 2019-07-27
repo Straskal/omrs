@@ -7,16 +7,14 @@ local keys = keyboard.keys
 local unpack = table.unpack
 local drawx = graphics.drawx
 
-local image = nil
-
 local function preload(level)
     level:preload("assets/gos/other.obj.lua")
-    image = graphics.new_image("assets/gos/omrs.png")
+    level.assets:load_image("assets/gos/omrs.png")
 end
 
-local function new()
+local function new(level)
     return {
-        image = image,
+        image = level.assets:get("assets/gos/omrs.png"),
         src = {0, 0, 32, 32},
         speed = 100,
         animationclips = {
@@ -34,7 +32,7 @@ local function new()
             accumulated_time = 0,
             time = 0
         }),
-        update = function(self, game, level, dt)
+        update = function(self, game, _, dt)
             if keyboard.is_key_pressed(keys.SPACE) then
                 game:switch_state(levelstate("assets/levels/test.lvl.lua"))
             end
@@ -63,7 +61,7 @@ local function new()
             end
             self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
         end,
-        draw = function(self, _, level, _)
+        draw = function(self, _, _, _)
             local x, y = level.camera:transform_point(unpack(self.position))
             graphics.set_draw_color(1, 1, 1, 1)
             drawx(self.image, x, y, self.src[1], self.src[2], self.src[3], self.src[4], 1, 1, 0)
