@@ -38,4 +38,6 @@ function animator:update(dt)
     return src_x, src_y, self.frame_width, self.frame_height
 end
 
-return new
+return {
+    new = new
+}

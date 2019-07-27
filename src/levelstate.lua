@@ -1,4 +1,5 @@
 local graphics = require("milk.graphics")
+local bump = require("libs.bump")
 local camera = require("camera")
 local assets = require("assets")
 
@@ -24,6 +25,7 @@ local function new(levelfile)
         {
             camera = camera(),
             assets = assets.new(),
+            bumpworld = bump.newWorld(32),
             file = levelfile,
             data = {},
             tilesets = {},
@@ -136,6 +138,9 @@ function levelstate:update(game, dt)
         for i = 1, #self.tospawn do
             local go = self.tospawn[i]
             insert(self.gameobjects, go)
+        end
+        for i = 1, #self.tospawn do
+            local _ = self.tospawn[i].load and self.tospawn[i]:load(game, self)
         end
         for i = 1, #self.tospawn do
             local _ = self.tospawn[i].spawned and self.tospawn[i]:spawned(game, self)
