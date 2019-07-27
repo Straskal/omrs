@@ -3,7 +3,7 @@ local window = require("milk.window")
 local time = require("milk.time")
 
 -- set extra search path for assets
-package.path = package.path .. ";assets/?.lua"
+package.path = package.path .. ";src/?.lua"
 
 local game = require("game")
 

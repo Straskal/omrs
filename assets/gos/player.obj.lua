@@ -2,8 +2,8 @@ local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
 local animator = require("animator")
 local levelstate = require("levelstate")
-local keys = keyboard.keys
 
+local keys = keyboard.keys
 local unpack = table.unpack
 local drawx = graphics.drawx
 
