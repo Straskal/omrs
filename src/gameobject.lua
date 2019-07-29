@@ -13,6 +13,7 @@ local function new(o)
     o.image = o.image or nil
     o.srcrect = o.srcrect or {0, 0, 32, 32}
     o.color = o.color or {1, 1, 1, 1}
+    o.layer = o.layer or 0
 
     -- body properties
     o.scale = o.scale or 1

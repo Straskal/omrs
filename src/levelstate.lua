@@ -1,8 +1,11 @@
 local graphics = require("milk.graphics")
+local keyboard = require("milk.keyboard")
 local bump = require("libs.bump")
+local debugstate = require("debugstate")
 local camera = require("camera")
 local assets = require("assets")
 
+local keys = keyboard.keys
 local insert = table.insert
 local remove = table.remove
 local unpack = table.unpack
@@ -132,8 +135,20 @@ function levelstate:enter()
     end
 end
 
--- luacheck: push ignore
 function levelstate:update(dt)
+    --=============================================
+    -- debug tools
+    --=============================================
+    if keyboard.is_key_released(keys.TILDE) then
+        if self.debugtools then
+            self.game:pop_state()
+            self.debugtools = nil
+        else
+            self.debugtools = debugstate.new(self)
+            self.game:push_state(self.debugtools)
+        end
+    end
+
     -- insert all spawned gos into active gos
     if #self.tospawn > 0 then
         for i = 1, #self.tospawn do
@@ -172,14 +187,15 @@ function levelstate:update(dt)
     end
 end
 
-function levelstate:draw(game, dt)
+function levelstate:draw()
     draw_tilemap(self)
 
     for _, go in pairs(self.gameobjects) do
-        local _ = go.draw and go:draw(dt)
+        local _ = go.draw and go:draw()
     end
 end
 
+-- luacheck: push ignore
 function levelstate:exit()
 end
 -- luacheck: pop

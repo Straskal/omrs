@@ -6,7 +6,6 @@ local gui = require("gui")
 local keys = keyboard.keys
 
 local unpack = table.unpack
-local format = string.format
 
 local game = {
     statestack = {},
@@ -70,13 +69,13 @@ function game:update(dt)
     -- attempt to tick all states from top to bottom
     for i = #self.statestack, 1, -1 do
         self.statestack[i]:update(dt)
-        if not self.statestack[i].update_below then
+        if not self.statestack[i].updatebelow then
             break
         end
     end
 end
 
-function game:draw(dt)
+function game:draw()
     graphics.set_draw_color(unpack(self.bgcolor))
     graphics.clear()
 
@@ -85,12 +84,11 @@ function game:draw(dt)
     local len = #self.statestack
     for i = 1, len do
         local above = self.statestack[i + 1]
-        if (not above) or above.draw_below then
-            self.statestack[i]:draw(dt)
+        if (not above) or above.drawbelow then
+            self.statestack[i]:draw()
         end
     end
-    -- draw fps
-    gui:label(430, 5, format("FPS: %.0f", game.fps))
+
     gui:end_draw()
 
     graphics.present()

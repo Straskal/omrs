@@ -13,6 +13,7 @@ end
 local function new()
     return gameobject.new(
         {
+            layer = 1,
             speed = 75,
             animator = animator.new(
                 {
@@ -34,6 +35,15 @@ local function new()
                 end
                 if keyboard.is_key_pressed(keys.P) then
                     self.sound:play()
+                end
+
+                if keyboard.is_key_pressed(keys.K) then
+                    self.level:spawn(
+                        "assets/gos/other.obj.lua",
+                        {
+                            position = {self.position[1] + 64, self.position[2] + 64}
+                        }
+                    )
                 end
 
                 local inputx, inputy = 0, 0
