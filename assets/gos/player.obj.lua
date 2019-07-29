@@ -6,7 +6,6 @@ local levelstate = require("levelstate")
 local keys = keyboard.keys
 
 local function preload(level)
-    level:preload("assets/gos/other.obj.lua")
     level.assets:load_image("assets/gos/omrs.png")
     level.assets:load_sound("assets/gos/beep.wav")
 end
@@ -14,10 +13,7 @@ end
 local function new()
     return gameobject.new(
         {
-            image = nil,
-            sound = nil,
-            imagefile = "assets/gos/omrs.png",
-            speed = 100,
+            speed = 50,
             animationclips = {
                 idle = {1, 2, 3, 4, 5, 6}
             },
@@ -35,22 +31,16 @@ local function new()
                     time = 0
                 }
             ),
-            load = function(self)
+            onload = function(self)
                 self.sound = self.level.assets:get("assets/gos/beep.wav")
                 self.image = self.level.assets:get("assets/gos/omrs.png")
             end,
-            update = function(self, dt)
+            onupdate = function(self, dt)
                 if keyboard.is_key_pressed(keys.SPACE) then
                     self.level.game:switch_state(levelstate("assets/levels/test.lvl.lua"))
                 end
                 if keyboard.is_key_pressed(keys.P) then
-                    self.level:spawn(
-                        "assets/gos/other.obj.lua",
-                        {
-                            position = {self.position[1] + 50, self.position[2] + 50},
-                            speed = 2
-                        }
-                    )
+                    self.sound:play()
                 end
 
                 local inputx, inputy = 0, 0
@@ -67,16 +57,9 @@ local function new()
                     inputx = 1
                 end
 
-                local colls, len
-                self.position[1], self.position[2], colls, len =
-                    self.level.bumpworld:move(
-                    self,
-                    self.position[1] + (self.speed * inputx) * dt,
-                    self.position[2] + (self.speed * inputy) * dt
-                )
-
-                if len > 0 then
-                    self.level:destroy(colls[1].other)
+                local coll = self:moveandcollide((self.speed * inputx) * dt, (self.speed * inputy) * dt)
+                if coll then
+                    print("collision!")
                 end
 
                 self.srcrect[1], self.srcrect[2], self.srcrect[3], self.srcrect[4] = self.animator:update(dt)
