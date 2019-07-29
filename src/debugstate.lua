@@ -27,7 +27,7 @@ function debugstate:draw()
     local gos, len = self.level.bumpworld:getItems()
     for i = 1, len do
         local x, y, w, h = self.level.bumpworld:getRect(gos[i])
-        graphics.draw_filled_rect(x - w / 2, y - h / 2, w, h)
+        graphics.draw_filled_rect(x, y, w, h)
     end
 
     -- draw fps

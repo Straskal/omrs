@@ -14,6 +14,7 @@ local function new()
     return gameobject.new(
         {
             layer = 1,
+            bbox = {25, 32},
             speed = 75,
             animator = animator.new(
                 {
@@ -60,9 +61,11 @@ local function new()
                     inputx = 1
                 end
 
-                local coll = self:moveandcollide((self.speed * inputx) * dt, (self.speed * inputy) * dt)
-                if coll then
-                    print("collision!")
+                if inputx ~= 0 or inputy ~= 0 then
+                    local coll = self:moveandcollide((self.speed * inputx) * dt, (self.speed * inputy) * dt)
+                    if coll then
+                        print("collision!")
+                    end
                 end
 
                 self.animator:update(self, dt)

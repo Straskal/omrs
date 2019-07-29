@@ -38,7 +38,13 @@ function gameobject:load()
 end
 
 function gameobject:spawned()
-    self.level.bumpworld:add(self, self.position[1], self.position[2], self.bbox[1], self.bbox[2])
+    self.level.bumpworld:add(
+        self,
+        self.position[1] - self.bbox[1] / 2,
+        self.position[2] - self.bbox[2] / 2,
+        self.bbox[1],
+        self.bbox[2]
+    )
     self:onspawn()
 end
 
@@ -75,14 +81,20 @@ function gameobject:updatebbox()
 end
 
 function gameobject:move(x, y)
-    self.position[1], self.position[2] = self.position[1] + x, self.position[2] + y
+    local xoff = self.bbox[1] / 2
+    local yoff = self.bbox[2] / 2
+
+    self.position[1], self.position[2] = (self.position[1] - xoff) + x, (self.position[2] - yoff) + y
     self:updatebbox()
 end
 
 function gameobject:moveandcollide(x, y)
-    local targetx, targety = self.position[1] + x, self.position[2] + y
+    local xoff = self.bbox[1] / 2
+    local yoff = self.bbox[2] / 2
+    local targetx, targety = (self.position[1] - xoff) + x, (self.position[2] - yoff) + y
     local actualx, actualy, colls = self.level.bumpworld:move(self, targetx, targety)
-    self.position[1], self.position[2] = actualx, actualy
+
+    self.position[1], self.position[2] = actualx + xoff, actualy + yoff
     return colls[1]
 end
 
