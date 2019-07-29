@@ -13,22 +13,15 @@ end
 local function new()
     return gameobject.new(
         {
-            speed = 50,
-            animationclips = {
-                idle = {1, 2, 3, 4, 5, 6}
-            },
+            speed = 75,
             animator = animator.new(
                 {
-                    frame_width = 32,
-                    frame_height = 32,
+                    framewidth = 32,
+                    frameheight = 32,
                     rows = 2,
                     columns = 4,
-                    seconds_per_frame = 0.1,
-                    initial_anim = {1, 2, 3, 4, 5, 6},
-                    last_anim_time = 0,
-                    current_anim_frame = 1,
-                    accumulated_time = 0,
-                    time = 0
+                    secperframe = 0.1,
+                    initialanim = {1, 2, 3, 4, 5, 6}
                 }
             ),
             onload = function(self)
@@ -62,7 +55,7 @@ local function new()
                     print("collision!")
                 end
 
-                self.srcrect[1], self.srcrect[2], self.srcrect[3], self.srcrect[4] = self.animator:update(dt)
+                self.animator:update(self, dt)
             end
         }
     )

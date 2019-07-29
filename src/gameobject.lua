@@ -51,6 +51,7 @@ function gameobject:draw()
     graphics.set_draw_color(unpack(self.color))
     graphics.drawx(
         self.image,
+        -- center the image
         posx - (self.srcrect[3] / 2),
         posy - (self.srcrect[4] / 2),
         self.srcrect[1],
@@ -66,6 +67,10 @@ end
 function gameobject:destroyed()
     self:ondestroy()
     self.level.bumpworld:remove(self)
+end
+
+function gameobject:setimagesrc(x, y, w, h)
+    self.srcrect[1], self.srcrect[2], self.srcrect[3], self.srcrect[4] = x, y, w, h
 end
 
 function gameobject:updatebbox()
