@@ -100,6 +100,7 @@ function levelstate:spawn(file, props)
     for k, v in pairs(props) do
         go[k] = v
     end
+    go.level = self
 
     insert(self.tospawn, go)
     return go
@@ -112,7 +113,7 @@ function levelstate:destroy(go)
     end
 end
 
-function levelstate:enter(_)
+function levelstate:enter()
     -- load and run the level file
     self.data = dofile(self.file)
     local layers = self.data.tilemap.layers
@@ -132,7 +133,7 @@ function levelstate:enter(_)
 end
 
 -- luacheck: push ignore
-function levelstate:update(game, dt)
+function levelstate:update(dt)
     -- insert all spawned gos into active gos
     if #self.tospawn > 0 then
         for i = 1, #self.tospawn do
@@ -140,10 +141,10 @@ function levelstate:update(game, dt)
             insert(self.gameobjects, go)
         end
         for i = 1, #self.tospawn do
-            local _ = self.tospawn[i].load and self.tospawn[i]:load(game, self)
+            local _ = self.tospawn[i].load and self.tospawn[i]:load(self)
         end
         for i = 1, #self.tospawn do
-            local _ = self.tospawn[i].spawned and self.tospawn[i]:spawned(game, self)
+            local _ = self.tospawn[i].spawned and self.tospawn[i]:spawned(self)
         end
         self.tospawn = {}
         sort(self.gameobjects, gosort)
@@ -152,7 +153,7 @@ function levelstate:update(game, dt)
     -- remove all gos marked for deletion
     if #self.todestroy > 0 then
         for i = 1, #self.todestroy do
-            local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(game, self)
+            local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(self)
         end
         for i = 1, #self.todestroy do
             local go = self.todestroy[i]
@@ -167,7 +168,7 @@ function levelstate:update(game, dt)
     end
 
     for _, go in pairs(self.gameobjects) do
-        local _ = go.update and go:update(game, self, dt)
+        local _ = go.update and go:update(dt)
     end
 end
 
@@ -175,7 +176,7 @@ function levelstate:draw(game, dt)
     draw_tilemap(self)
 
     for _, go in pairs(self.gameobjects) do
-        local _ = go.draw and go:draw(game, self, dt)
+        local _ = go.draw and go:draw(dt)
     end
 end
 

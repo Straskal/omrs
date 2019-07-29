@@ -17,16 +17,16 @@ local function new(o)
     return setmetatable(o, {__index = gameobject})
 end
 
-function gameobject:load(_, level)
-    self.image = level.assets:get(self.imagefile)
+function gameobject:load()
+    self.image = self.level.assets:get(self.imagefile)
 end
 
-function gameobject:spawned(_, level)
-    level.bumpworld:add(self, self.position[1], self.position[2], self.bbox[1], self.bbox[2])
+function gameobject:spawned()
+    self.level.bumpworld:add(self, self.position[1], self.position[2], self.bbox[1], self.bbox[2])
 end
 
-function gameobject:draw(_, level, _)
-    local posx, posy = level.camera:transform_point(self.position[1], self.position[2])
+function gameobject:draw(_)
+    local posx, posy = self.level.camera:transform_point(self.position[1], self.position[2])
 
     graphics.set_draw_color(unpack(self.color))
     graphics.drawx(
@@ -43,8 +43,8 @@ function gameobject:draw(_, level, _)
     )
 end
 
-function gameobject:destroyed(_, level)
-    level.bumpworld:remove(self)
+function gameobject:destroyed()
+    self.level.bumpworld:remove(self)
 end
 
 return {

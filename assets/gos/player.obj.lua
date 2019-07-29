@@ -14,6 +14,7 @@ end
 local function new()
     return gameobject.new(
         {
+            image = nil,
             sound = nil,
             imagefile = "assets/gos/omrs.png",
             speed = 100,
@@ -34,16 +35,16 @@ local function new()
                     time = 0
                 }
             ),
-            load = function(self, game, level)
-                self.sound = level.assets:get("assets/gos/beep.wav")
-                self.super.load(self, game, level)
+            load = function(self)
+                self.sound = self.level.assets:get("assets/gos/beep.wav")
+                self.image = self.level.assets:get("assets/gos/omrs.png")
             end,
-            update = function(self, game, level, dt)
+            update = function(self, dt)
                 if keyboard.is_key_pressed(keys.SPACE) then
-                    game:switch_state(levelstate("assets/levels/test.lvl.lua"))
+                    self.level.game:switch_state(levelstate("assets/levels/test.lvl.lua"))
                 end
                 if keyboard.is_key_pressed(keys.P) then
-                    level:spawn(
+                    self.level:spawn(
                         "assets/gos/other.obj.lua",
                         {
                             position = {self.position[1] + 50, self.position[2] + 50},
@@ -68,14 +69,14 @@ local function new()
 
                 local colls, len
                 self.position[1], self.position[2], colls, len =
-                    level.bumpworld:move(
+                    self.level.bumpworld:move(
                     self,
                     self.position[1] + (self.speed * inputx) * dt,
                     self.position[2] + (self.speed * inputy) * dt
                 )
 
                 if len > 0 then
-                    level:destroy(colls[1].other)
+                    self.level:destroy(colls[1].other)
                 end
 
                 self.srcrect[1], self.srcrect[2], self.srcrect[3], self.srcrect[4] = self.animator:update(dt)

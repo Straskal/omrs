@@ -9,10 +9,10 @@ local function preload(level)
     level.assets:load_image("assets/gos/omrs.png")
 end
 
-local function new(level)
+local function new()
     return {
-        image = level.assets:get("assets/gos/omrs.png"),
-        beep = level.assets:get("assets/gos/beep.wav"),
+        image = nil,
+        beep = nil,
         src = {0, 0, 32, 32},
         boop = nil,
         speed = 100,
@@ -33,15 +33,19 @@ local function new(level)
                 time = 0
             }
         ),
-        spawned = function(self, _, _)
-            level.bumpworld:add(self, self.position[1], self.position[2], 28, 28)
+        load = function(self)
+            self.image = self.level.assets:get("assets/gos/omrs.png")
+            self.beep = self.level.assets:get("assets/gos/beep.wav")
+        end,
+        spawned = function(self)
+            self.level.bumpworld:add(self, self.position[1], self.position[2], 28, 28)
             self.beep:play()
         end,
-        update = function(self, _, _, dt)
+        update = function(self, dt)
             self.src[1], self.src[2], self.src[3], self.src[4] = self.animator:update(dt)
         end,
-        draw = function(self, _, _, _)
-            local x, y = level.camera:transform_point(unpack(self.position))
+        draw = function(self, _)
+            local x, y = self.level.camera:transform_point(unpack(self.position))
             graphics.set_draw_color(1, 1, 1, 1)
             drawx(
                 self.image,
@@ -56,8 +60,8 @@ local function new(level)
                 0
             )
         end,
-        destroyed = function(self, _, _)
-            level.bumpworld:remove(self)
+        destroyed = function(self)
+            self.level.bumpworld:remove(self)
             self.beep:play()
         end
     }

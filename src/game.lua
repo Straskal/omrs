@@ -16,6 +16,7 @@ local game = {
 }
 
 function game:push_state(state)
+    state.game = self
     table.insert(self.statestack, state)
     if state.enter then
         state:enter(self)
@@ -68,7 +69,7 @@ function game:update(dt)
 
     -- attempt to tick all states from top to bottom
     for i = #self.statestack, 1, -1 do
-        self.statestack[i]:update(self, dt)
+        self.statestack[i]:update(dt)
         if not self.statestack[i].update_below then
             break
         end
@@ -85,7 +86,7 @@ function game:draw(dt)
     for i = 1, len do
         local above = self.statestack[i + 1]
         if (not above) or above.draw_below then
-            self.statestack[i]:draw(self, dt)
+            self.statestack[i]:draw(dt)
         end
     end
     -- draw fps
