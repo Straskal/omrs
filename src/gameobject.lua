@@ -69,10 +69,6 @@ function gameobject:destroyed()
     self.level.bumpworld:remove(self)
 end
 
-function gameobject:setimagesrc(x, y, w, h)
-    self.srcrect[1], self.srcrect[2], self.srcrect[3], self.srcrect[4] = x, y, w, h
-end
-
 function gameobject:updatebbox()
     self.level.bumpworld.update(self, self.position[1], self.position[2])
 end
