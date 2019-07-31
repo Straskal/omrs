@@ -6,6 +6,7 @@ local levelstate = require("levelstate")
 local keys = keyboard.keys
 
 local function preload(level)
+    level:preloadgo("assets/gos/other.obj.lua")
     level.assets:load_image("assets/gos/omrs.png")
     level.assets:load_sound("assets/gos/beep.wav")
 end

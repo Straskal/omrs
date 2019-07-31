@@ -44,7 +44,7 @@ local function new(levelfile)
     )
 end
 
-local function draw_tilemap(self)
+local function drawtilemap(self)
     local cam = self.camera
     local tilemap = self.data.tilemap
     local tilesets = self.tilesets
@@ -81,7 +81,7 @@ local function draw_tilemap(self)
     end
 end
 
-function levelstate:preload(file)
+function levelstate:preloadgo(file)
     -- load the go file and preload all assets if not already loaded
     if not self.loadedgofiles[file] then
         self.loadedgofiles[file] = dofile(file)
@@ -90,21 +90,21 @@ function levelstate:preload(file)
 end
 
 function levelstate:spawn(file, props)
-    props =
-        props or
-        {
-            position = {0, 0}
-        }
+    props = props or {position = {0, 0}}
 
-    self:preload(file)
+    -- call preload on object, which can recursively call level:preload.
+    -- we do this so we can load all objects in/to be spawned into a scene when the scene initially loads.
+    self:preloadgo(file)
 
-    -- run the file and set properties on go
+    -- create go and set properties
     local go = self.loadedgofiles[file].new(self)
     for k, v in pairs(props) do
         go[k] = v
     end
-    go.level = self
 
+    go.level = self
+    -- load the instance. all assets that this go relies on should have bee
+    go:load(self)
     insert(self.tospawn, go)
     return go
 end
@@ -135,10 +135,24 @@ function levelstate:enter()
     end
 end
 
+function levelstate:refreshgolists()
+    for i = 1, #self.tospawn do
+        local go = self.tospawn[i]
+        insert(self.gameobjects, go)
+    end
+
+    for i = 1, #self.todestroy do
+        local go = self.todestroy[i]
+        for j = 1, #self.gameobjects do
+            if self.gameobjects[j] == go then
+                remove(self.gameobjects, j)
+            end
+        end
+    end
+end
+
 function levelstate:update(dt)
-    --=============================================
     -- debug tools
-    --=============================================
     if keyboard.is_key_released(keys.TILDE) then
         if self.debugtools then
             self.game:pop_state()
@@ -149,49 +163,45 @@ function levelstate:update(dt)
         end
     end
 
-    -- insert all spawned gos into active gos
+    -- insert and remove spawned and destroyed gos
+    self:refreshgolists()
+
+    -- invoke all spawned callbacks
     if #self.tospawn > 0 then
         for i = 1, #self.tospawn do
-            local go = self.tospawn[i]
-            insert(self.gameobjects, go)
+            if self.tospawn[i].spawned then
+                self.tospawn[i]:spawned()
+            end
         end
-        for i = 1, #self.tospawn do
-            local _ = self.tospawn[i].load and self.tospawn[i]:load(self)
-        end
-        for i = 1, #self.tospawn do
-            local _ = self.tospawn[i].spawned and self.tospawn[i]:spawned(self)
-        end
+
         self.tospawn = {}
         sort(self.gameobjects, gosort)
     end
 
-    -- remove all gos marked for deletion
+    -- invoke go destroyed callback
     if #self.todestroy > 0 then
         for i = 1, #self.todestroy do
             local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(self)
         end
-        for i = 1, #self.todestroy do
-            local go = self.todestroy[i]
-            for j = 1, #self.gameobjects do
-                if self.gameobjects[j] == go then
-                    remove(self.gameobjects, j)
-                end
-            end
-        end
+
         self.todestroy = {}
         sort(self.gameobjects, gosort)
     end
 
-    for _, go in pairs(self.gameobjects) do
-        local _ = go.update and go:update(dt)
+    for i = 1, #self.gameobjects do
+        if self.gameobjects[i].update then
+            self.gameobjects[i]:update(dt)
+        end
     end
 end
 
 function levelstate:draw()
-    draw_tilemap(self)
+    drawtilemap(self)
 
-    for _, go in pairs(self.gameobjects) do
-        local _ = go.draw and go:draw()
+    for i = 1, #self.gameobjects do
+        if self.gameobjects[i].draw then
+            self.gameobjects[i]:draw()
+        end
     end
 end
 

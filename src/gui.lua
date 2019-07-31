@@ -4,6 +4,7 @@ local font = require("font")
 local mouse_buttons = mouse.buttons
 
 local setdrawcolor = graphics.set_draw_color
+local drawrect = graphics.draw_rect
 local drawfillrect = graphics.draw_filled_rect
 
 local gui = {}
@@ -17,7 +18,7 @@ function gui:init()
         active_id = -1
     }
     self.style = {
-        font = font.new(graphics.new_image("assets/font.png"), -11, -3, 0.25),
+        font = font.new(graphics.new_image("assets/font.png"), -11, -3, 0.2),
         panel = {
             color = {0, 0, 0, 0.75}
         },
@@ -67,6 +68,27 @@ function gui:panel(x, y, w, h)
     setdrawcolor(1, 1, 1, 1)
 end
 -- luacheck: pop
+
+function gui:checkbox(id, obj, boolprop, x, y, w, h)
+    if is_mouse_over(self.mousex, self.mousey, x, y, w, h) then
+        self.hot_id = id
+        if self.active_id == 0 and self.is_down then
+            self.active_id = id
+        end
+    end
+
+    local clicked = not self.is_down and self.hot_id == id and self.active_id == id
+    if clicked then
+        obj[boolprop] = not obj[boolprop]
+    end
+
+    setdrawcolor(1, 1, 1, 1)
+    if obj[boolprop] then
+        drawfillrect(x, y, w, h)
+    else
+        drawrect(x, y, w, h)
+    end
+end
 
 --==========================================================
 -- BUTTON
