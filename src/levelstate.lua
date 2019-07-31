@@ -136,18 +136,26 @@ function levelstate:enter()
 end
 
 function levelstate:refreshgolists()
-    for i = 1, #self.tospawn do
-        local go = self.tospawn[i]
-        insert(self.gameobjects, go)
-    end
+    if #self.tospawn > 0 or #self.todestroy > 0 then
+        for i = 1, #self.tospawn do
+            local go = self.tospawn[i]
+            insert(self.gameobjects, go)
+        end
 
-    for i = 1, #self.todestroy do
-        local go = self.todestroy[i]
-        for j = 1, #self.gameobjects do
-            if self.gameobjects[j] == go then
-                remove(self.gameobjects, j)
+        self.tospawn = {}
+
+        for i = 1, #self.todestroy do
+            local go = self.todestroy[i]
+            for j = 1, #self.gameobjects do
+                if self.gameobjects[j] == go then
+                    remove(self.gameobjects, j)
+                end
             end
         end
+
+        self.todestroy = {}
+
+        sort(self.gameobjects, gosort)
     end
 end
 
@@ -163,30 +171,20 @@ function levelstate:update(dt)
         end
     end
 
-    -- insert and remove spawned and destroyed gos
-    self:refreshgolists()
-
     -- invoke all spawned callbacks
-    if #self.tospawn > 0 then
-        for i = 1, #self.tospawn do
-            if self.tospawn[i].spawned then
-                self.tospawn[i]:spawned()
-            end
+    for i = 1, #self.tospawn do
+        if self.tospawn[i].spawned then
+            self.tospawn[i]:spawned()
         end
-
-        self.tospawn = {}
-        sort(self.gameobjects, gosort)
     end
 
     -- invoke go destroyed callback
-    if #self.todestroy > 0 then
-        for i = 1, #self.todestroy do
-            local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(self)
-        end
-
-        self.todestroy = {}
-        sort(self.gameobjects, gosort)
+    for i = 1, #self.todestroy do
+        local _ = self.todestroy[i].destroyed and self.todestroy[i]:destroyed(self)
     end
+
+    -- insert and remove spawned and destroyed gos
+    self:refreshgolists()
 
     for i = 1, #self.gameobjects do
         if self.gameobjects[i].update then
