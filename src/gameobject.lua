@@ -4,6 +4,25 @@ local unpack = table.unpack
 local dummyfunc = function()
 end
 
+local function defaultdraw(self)
+    local posx, posy = self.level.camera:transform_point(self.position[1], self.position[2])
+
+    graphics.set_draw_color(unpack(self.color))
+    graphics.drawx(
+        self.image,
+        -- center the image
+        posx - (self.srcrect[3] / 2),
+        posy - (self.srcrect[4] / 2),
+        self.srcrect[1],
+        self.srcrect[2],
+        self.srcrect[3],
+        self.srcrect[4],
+        self.scale,
+        self.scale,
+        self.rotation
+    )
+end
+
 local gameobject = {}
 
 local function new(o)
@@ -25,16 +44,13 @@ local function new(o)
     o.onspawn = o.onspawn or dummyfunc
     o.onupdate = o.onupdate or dummyfunc
     o.ondestroy = o.ondestroy or dummyfunc
+    o.ondraw = o.ondraw or defaultdraw
 
     return setmetatable(o, {__index = gameobject})
 end
 
 function gameobject:load()
     self:onload()
-
-    if not self.image then
-        error("gameobjects must have an image")
-    end
 end
 
 function gameobject:spawned()
@@ -53,22 +69,7 @@ function gameobject:update(dt)
 end
 
 function gameobject:draw()
-    local posx, posy = self.level.camera:transform_point(self.position[1], self.position[2])
-
-    graphics.set_draw_color(unpack(self.color))
-    graphics.drawx(
-        self.image,
-        -- center the image
-        posx - (self.srcrect[3] / 2),
-        posy - (self.srcrect[4] / 2),
-        self.srcrect[1],
-        self.srcrect[2],
-        self.srcrect[3],
-        self.srcrect[4],
-        self.scale,
-        self.scale,
-        self.rotation
-    )
+    self:ondraw()
 end
 
 function gameobject:destroyed()
