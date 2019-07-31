@@ -163,11 +163,11 @@ function levelstate:update(dt)
     -- debug tools
     if keyboard.is_key_released(keys.TILDE) then
         if self.debugtools then
-            self.game:pop_state()
+            self.game:pop()
             self.debugtools = nil
         else
             self.debugtools = debugstate.new(self)
-            self.game:push_state(self.debugtools)
+            self.game:push(self.debugtools)
         end
     end
 

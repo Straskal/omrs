@@ -14,7 +14,7 @@ local game = {
     bgcolor = {0, 0, 0, 1}
 }
 
-function game:push_state(state)
+function game:push(state)
     state.game = self
     table.insert(self.statestack, state)
     if state.enter then
@@ -22,7 +22,7 @@ function game:push_state(state)
     end
 end
 
-function game:pop_state()
+function game:pop()
     local len = #self.statestack
     if len > 0 and self.statestack[len].exit then
         self.statestack[#self.statestack]:exit(self)
@@ -30,11 +30,11 @@ function game:pop_state()
     table.remove(self.statestack)
 end
 
-function game:switch_state(state)
+function game:replace(state)
     while #self.statestack > 0 do
         self:pop_state()
     end
-    self:push_state(state)
+    self:pushstate(state)
 
     --[[
         pop all states and push new one.
@@ -53,7 +53,7 @@ function game:start()
 
     gui:init()
 
-    self:push_state(levelstate("assets/levels/test.lvl.lua"))
+    self:push(levelstate("assets/levels/test.lvl.lua"))
 end
 
 function game:update(dt)

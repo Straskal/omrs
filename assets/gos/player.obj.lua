@@ -33,7 +33,7 @@ local function new()
             end,
             onupdate = function(self, dt)
                 if keyboard.is_key_pressed(keys.SPACE) then
-                    self.level.game:switch_state(levelstate("assets/levels/test.lvl.lua"))
+                    self.level.game:replace(levelstate("assets/levels/test.lvl.lua"))
                 end
                 if keyboard.is_key_pressed(keys.P) then
                     self.sound:play()
@@ -63,10 +63,7 @@ local function new()
                 end
 
                 if inputx ~= 0 or inputy ~= 0 then
-                    local coll = self:moveandcollide((self.speed * inputx) * dt, (self.speed * inputy) * dt)
-                    if coll then
-                        print("collision!")
-                    end
+                    self:moveandcollide((self.speed * inputx) * dt, (self.speed * inputy) * dt)
                 end
 
                 self.animator:update(self, dt)
