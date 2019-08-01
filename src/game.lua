@@ -1,7 +1,8 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local levelstate = require("levelstate")
+--local levelstate = require("levelstate")
+local leveleditstate = require("leveleditstate")
 local gui = require("gui")
 local keys = keyboard.keys
 
@@ -30,6 +31,11 @@ function game:pop()
     table.remove(self.statestack)
 end
 
+function game:insert(state, index)
+    table.insert(self.statestack, index, state)
+    state:enter(self)
+end
+
 function game:replace(state)
     while #self.statestack > 0 do
         self:pop_state()
@@ -53,7 +59,7 @@ function game:start()
 
     gui:init()
 
-    self:push(levelstate("assets/levels/test.lvl.lua"))
+    self:push(leveleditstate.new("assets/levels/test.lvl.lua"))
 end
 
 function game:update(dt)

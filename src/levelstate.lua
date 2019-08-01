@@ -208,4 +208,6 @@ function levelstate:exit()
 end
 -- luacheck: pop
 
-return new
+return {
+    new = new
+}
