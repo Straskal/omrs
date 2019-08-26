@@ -117,6 +117,10 @@ function levelstate:destroy(go)
 end
 
 function levelstate:enter()
+    -- offset camera by resolution width and height
+    local resw, resh = graphics.get_resolution()
+    self.camera:move(resw * 0.5, resh * 0.5)
+
     -- load and run the level file
     self.data = dofile(self.file)
     local layers = self.data.tilemap.layers
@@ -194,6 +198,8 @@ function levelstate:update(dt)
 end
 
 function levelstate:draw()
+    self.camera:calc_matrix()
+
     drawtilemap(self)
 
     for i = 1, #self.gameobjects do

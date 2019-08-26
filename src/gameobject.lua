@@ -6,19 +6,20 @@ end
 
 local function defaultdraw(self)
     local posx, posy = self.level.camera:transform_point(self.position[1], self.position[2])
+    local zoom = self.level.camera.zoom
 
     graphics.set_draw_color(unpack(self.color))
     graphics.drawx(
         self.image,
         -- center the image
-        posx - (self.srcrect[3] / 2),
-        posy - (self.srcrect[4] / 2),
+        posx - (self.srcrect[3] / 2) * zoom,
+        posy - (self.srcrect[4] / 2) * zoom,
         self.srcrect[1],
         self.srcrect[2],
         self.srcrect[3],
         self.srcrect[4],
-        self.scale,
-        self.scale,
+        self.scale * zoom,
+        self.scale * zoom,
         self.rotation
     )
 end

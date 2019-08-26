@@ -1,3 +1,4 @@
+local graphics = require("milk.graphics")
 local matrix = require("libs.matrix")
 
 local camera = {}
@@ -46,8 +47,9 @@ function camera:calc_matrix()
     self.translation[2][3] = -self.position[2]
     self.scale[1][1] = self.zoom
     self.scale[2][2] = self.zoom
-    self.view_translation[1][3] = 640 * 0.5
-    self.view_translation[2][3] = 360 * 0.5
+    local resw, resh = graphics.get_resolution()
+    self.view_translation[1][3] = resw * 0.5
+    self.view_translation[2][3] = resh * 0.5
 
     self.matrix = self.view_translation * self.scale * self.translation
     self.invmatrix = self.matrix:invert()
