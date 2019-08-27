@@ -4,6 +4,7 @@ local keyboard = require("milk.keyboard")
 local mouse = require("milk.mouse")
 local levelstate = require("levelstate")
 local gui = require("gui")
+local persistence = require("libs.persistence")
 local mousebuttons = mouse.buttons
 local keys = keyboard.keys
 
@@ -129,6 +130,10 @@ local function handleinput(self, dt)
 
     -- CTRL+
     if keyboard.is_key_down(keys.LCTRL) then
+        -- S: save map data and overwrite currently edited file
+        if keyboard.is_key_released(keys.S) then
+            _G.persistence.store(self.levelstate.file, self.levelstate.data)
+        end
         -- G: toggle grid
         if keyboard.is_key_released(keys.G) then
             self.grid.show = not self.grid.show
