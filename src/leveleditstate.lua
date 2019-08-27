@@ -186,6 +186,7 @@ local function handleinput(self, dt)
             nextlayer = 1
         end
         self.map.selected_layer = nextlayer
+        self.tile_picker.selected = 0
         construct_tile_picker_grid(self)
     end
 
@@ -270,7 +271,7 @@ end
 --=================================================
 local function draw_left_panel()
     local resw, resh = graphics.get_resolution()
-    gui:panel(0, 0, resw * 0.2, resh * 0.95)
+    gui:panel(0, 0, resw * 0.3, resh * 0.95)
     gui:label(5, 5, "Tiles")
 end
 
@@ -433,7 +434,7 @@ function editstate:draw()
     draw_tile_picker(self)
 
     -- only focus on the left panel if we are hovering over it, else focus on the map editing
-    if is_mouse_over(self.mouse_state.x, self.mouse_state.y, 0, 0, resw * 0.2, resh * 0.95) then
+    if is_mouse_over(self.mouse_state.x, self.mouse_state.y, 0, 0, resw * 0.3, resh * 0.95) then
         if mouse.is_button_pressed(mousebuttons.LEFT) then
             try_pick_tile(self)
         end

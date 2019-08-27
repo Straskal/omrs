@@ -31,7 +31,7 @@ return {
                 }
             },
             {
-                tilesetfile = "assets/levels/test.tiles.lua",
+                tilesetfile = "assets/levels/test2.tiles.lua",
                 color = {1, 1, 1, 1},
                 tiles = {
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

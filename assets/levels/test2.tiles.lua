@@ -1,6 +1,6 @@
 return {
-    tilesheetfile = "assets/core/testtilesheet.png",
-    tiledefinitions = {
+    imagefile = "assets/levels/testtilesheet.png",
+    tiledefs = {
         {
             -- grass
             id = 1,
