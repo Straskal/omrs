@@ -3,6 +3,7 @@ local graphics = require("milk.graphics")
 local font = require("font")
 local mouse_buttons = mouse.buttons
 
+local unpack = table.unpack
 local setdrawcolor = graphics.set_draw_color
 local drawrect = graphics.draw_rect
 local drawfillrect = graphics.draw_filled_rect
@@ -18,6 +19,7 @@ function gui:init()
         active_id = -1
     }
     self.style = {
+        font_color = {1, 1, 1, 1},
         font = font.new(graphics.new_image("assets/font.png"), -11, -3, 0.2),
         panel = {
             color = {0, 0, 0, 0.75}
@@ -55,6 +57,7 @@ end
 -- LABEL
 --==========================================================
 function gui:label(x, y, txt)
+    graphics.set_draw_color(unpack(self.style.font_color))
     self.style.font:print(x, y, txt)
 end
 
