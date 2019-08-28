@@ -4,7 +4,7 @@ local keyboard = require("milk.keyboard")
 local mouse = require("milk.mouse")
 local levelstate = require("levelstate")
 local gui = require("gui")
-local persistence = require("libs.persistence")
+require("libs.persistence")
 local mousebuttons = mouse.buttons
 local keys = keyboard.keys
 
@@ -104,9 +104,6 @@ local function handleinput(self, dt)
     ms.prevx, ms.prevy = ms.x, ms.y
     ms.x, ms.y = mouse.get_position()
 
-    -- zoom
-    ms.scroll = mouse.get_scroll()
-
     -- only zoom if control is not being pressed.
     -- this allows for other controls to use control+ shortcuts without zooming.
     ms.scroll = mouse.get_scroll()
@@ -130,6 +127,12 @@ local function handleinput(self, dt)
 
     -- CTRL+
     if keyboard.is_key_down(keys.LCTRL) then
+        if ms.scroll > 0 and self.brushsize > 1 then
+            self.brushsize = self.brushsize - 1
+        elseif ms.scroll < 0 and self.brushsize < 10 then
+            self.brushsize = self.brushsize + 1
+        end
+
         -- S: save map data and overwrite currently edited file
         if keyboard.is_key_released(keys.S) then
             _G.persistence.store(self.levelstate.file, self.levelstate.data)
