@@ -1,18 +1,18 @@
 local window = require("milk.window")
 local graphics = require("milk.graphics")
 local keyboard = require("milk.keyboard")
-local levelstate = require("levelstate")
-local leveleditstate = require("leveleditstate")
+-- local levelstate = require("levelstate")
+local leveleditstate = require("editor.leveleditstate")
 local gui = require("gui")
-local keys = keyboard.keys
 
+local keys = keyboard.keys
 local unpack = table.unpack
 
 local game = {
     statestack = {},
     framestart = 0,
     fps = 0,
-    bgcolor = {0, 0, 0, 1}
+    background_color = {0, 0, 0, 1}
 }
 
 function game:push(state)
@@ -55,7 +55,7 @@ end
 function game:start()
     window.set_title("Old Man Rage Strength")
     window.set_size(1280, 720)
-    graphics.set_resolution(480, 272)
+    graphics.set_resolution(1280, 720)
 
     gui:init()
 
@@ -82,7 +82,7 @@ function game:update(dt)
 end
 
 function game:draw()
-    graphics.set_draw_color(unpack(self.bgcolor))
+    graphics.set_draw_color(unpack(self.background_color))
     graphics.clear()
 
     gui:begin_draw()

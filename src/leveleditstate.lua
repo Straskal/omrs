@@ -127,6 +127,7 @@ local function handleinput(self, dt)
 
     -- CTRL+
     if keyboard.is_key_down(keys.LCTRL) then
+        -- SCROLL: change brush size
         if ms.scroll > 0 and self.brushsize > 1 then
             self.brushsize = self.brushsize - 1
         elseif ms.scroll < 0 and self.brushsize < 10 then

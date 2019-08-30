@@ -20,7 +20,7 @@ function gui:init()
     }
     self.style = {
         font_color = {1, 1, 1, 1},
-        font = font.new(graphics.new_image("assets/font.png"), -11, -3, 0.2),
+        font = font.new(graphics.new_image("assets/font.png"), -11, -3, 0.4),
         panel = {
             color = {0, 0, 0, 0.75}
         },
